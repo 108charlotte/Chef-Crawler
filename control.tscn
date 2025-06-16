@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://dei60x38a8c35"]
+
+[ext_resource type="Script" uid="uid://dhiv4m3q55wol" path="res://WelcomeScreen.gd" id="1_0fbet"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_0fbet")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_right = 106.0
+offset_bottom = 46.0
+text = "ChefCrawler"
+fit_content = true
+scroll_active = false
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 47.0
+offset_right = 65.0
+offset_bottom = 55.0
+text = "Get Started"
+
+[connection signal="pressed" from="Button" to="." method="_on_StartButton_pressed"]
