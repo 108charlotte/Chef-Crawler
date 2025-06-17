@@ -16,9 +16,8 @@ const MIN_ROOM_DIMENSION = 5
 const MAX_ROOM_DIMENSION = 8
 
 enum Tile {
-	Wall, 
-	Door, 
-	Floor, 
+	Wall = 26, 
+	Door = 45,  
 	Textured_Dirt = 49, 
 	Stone_Wall = 40
 }
@@ -28,8 +27,8 @@ var map = []
 var rooms = []
 var level_size
 
-@onready var tile_map = $TileMap
-@onready var player = $TileMap/TileMapLayer
+@onready var tile_map = $TileMap/TileMapLayer
+@onready var player = $Tile0085
 
 var player_tile
 var score = 0
@@ -48,6 +47,5 @@ func build_level():
 	for x in range(level_size.x): 
 		map.append([])
 		for y in range(level_size.y): 
-			map[x].append(Tile.Stone_Wall)
-			tile_map.set_cell(0, Vector2i(x, y), 0, Vector2i(0, 0))
-			print("Trying to place tile ID:", Tile.Textured_Dirt, "at:", x, y)
+			map[x].append(Tile.Textured_Dirt)
+			tile_map.set_cell(Vector2i(x, y), Tile.Textured_Dirt, Vector2i(0, 0))
