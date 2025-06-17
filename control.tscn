@@ -1,6 +1,6 @@
 [gd_scene load_steps=267 format=3 uid="uid://dei60x38a8c35"]
 
-[ext_resource type="Script" uid="uid://crhxhsp87ipi7" path="res://Game.gd" id="1_k3vlv"]
+[ext_resource type="Script" uid="uid://u1ovuac2wnt6" path="res://world.gd" id="1_k3vlv"]
 [ext_resource type="Texture2D" uid="uid://y76jiqativmj" path="res://assets/Tiles/tile_0000.png" id="2_k3vlv"]
 [ext_resource type="Texture2D" uid="uid://cvjtu8vn3s8g0" path="res://assets/Tiles/tile_0001.png" id="3_kxxmu"]
 [ext_resource type="Texture2D" uid="uid://cw2f65260omxd" path="res://assets/Tiles/tile_0010.png" id="4_nnes2"]
@@ -801,24 +801,6 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-script = ExtResource("1_k3vlv")
-
-[node name="TileMap" type="TileMap" parent="."]
-tile_set = SubResource("TileSet_s2du1")
-format = 2
-
-[node name="TileMapLayer" type="TileMapLayer" parent="TileMap"]
-tile_set = SubResource("TileSet_s2du1")
-
-[node name="Tile0085" type="Sprite2D" parent="."]
-position = Vector2(171, 80)
-texture = ExtResource("118_tme03")
-
-[node name="Camera2D" type="Camera2D" parent="Tile0085"]
-drag_left_margin = 0.0
-drag_top_margin = 0.0
-drag_right_margin = 0.0
-drag_bottom_margin = 0.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -847,3 +829,18 @@ offset_right = 215.0
 offset_bottom = 23.0
 theme_override_font_sizes/font_size = 8
 text = "Score: "
+
+[node name="World" type="Node2D" parent="."]
+script = ExtResource("1_k3vlv")
+
+[node name="TileMap" type="TileMap" parent="World"]
+auto_translate_mode = 2
+tile_set = SubResource("TileSet_s2du1")
+format = 2
+
+[node name="TileMapLayer" type="TileMapLayer" parent="World/TileMap"]
+auto_translate_mode = 2
+tile_set = SubResource("TileSet_s2du1")
+
+[node name="Tile0085" type="Sprite2D" parent="World"]
+texture = ExtResource("118_tme03")
