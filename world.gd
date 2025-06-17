@@ -17,6 +17,7 @@ const MAX_ROOM_DIMENSION = 8
 
 enum Tile {
 	Wall = 26, 
+	Inside_Floor = 0, 
 	Door = 45,  
 	Textured_Dirt = 49, 
 	Stone_Wall = 40
@@ -100,7 +101,7 @@ func add_room(free_regions):
 
 	for x in range(start_x + 1, start_x + size_x - 1):
 		for y in range(start_y + 1, start_y + size_y - 1):
-			set_tile(x, y, Tile.Door)
+			set_tile(x, y, Tile.Inside_Floor)
 			
 			
 	cut_regions(free_regions, room)
