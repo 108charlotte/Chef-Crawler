@@ -1,4 +1,4 @@
-[gd_scene load_steps=267 format=3 uid="uid://dei60x38a8c35"]
+[gd_scene load_steps=268 format=3 uid="uid://dei60x38a8c35"]
 
 [ext_resource type="Script" uid="uid://u1ovuac2wnt6" path="res://world.gd" id="1_k3vlv"]
 [ext_resource type="Texture2D" uid="uid://y76jiqativmj" path="res://assets/Tiles/tile_0000.png" id="2_k3vlv"]
@@ -133,6 +133,7 @@
 [ext_resource type="Texture2D" uid="uid://dqwwy3ei35vor" path="res://assets/Tiles/tile_0097.png" id="131_y0ft3"]
 [ext_resource type="Texture2D" uid="uid://ck2vy7bgpyy61" path="res://assets/Tiles/tile_0098.png" id="132_timvn"]
 [ext_resource type="Texture2D" uid="uid://dqdftx8syeh2l" path="res://assets/Tiles/tile_0099.png" id="133_svxsf"]
+[ext_resource type="Script" uid="uid://m3jgwuc5yw4e" path="res://intro_screen.gd" id="134_kxxmu"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_k3vlv"]
 texture = ExtResource("2_k3vlv")
@@ -802,28 +803,28 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="Stats" type="CanvasLayer" parent="."]
 
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+[node name="ColorRect" type="ColorRect" parent="Stats"]
 offset_right = 259.0
 offset_bottom = 13.0
 color = Color(0.180005, 0.180005, 0.180005, 0.847059)
 
-[node name="Label" type="Label" parent="CanvasLayer"]
+[node name="Label" type="Label" parent="Stats"]
 offset_left = 7.0
 offset_right = 47.0
 offset_bottom = 23.0
 theme_override_font_sizes/font_size = 8
 text = "Level: "
 
-[node name="HP" type="Label" parent="CanvasLayer"]
+[node name="HP" type="Label" parent="Stats"]
 offset_left = 91.0
 offset_right = 131.0
 offset_bottom = 23.0
 theme_override_font_sizes/font_size = 8
 text = "HP: "
 
-[node name="Score" type="Label" parent="CanvasLayer"]
+[node name="Score" type="Label" parent="Stats"]
 offset_left = 175.0
 offset_right = 215.0
 offset_bottom = 23.0
@@ -847,3 +848,24 @@ texture = ExtResource("118_tme03")
 
 [node name="Camera2D" type="Camera2D" parent="World/Player"]
 position_smoothing_enabled = true
+
+[node name="TitleScreen2" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("134_kxxmu")
+
+[node name="dedication" type="RichTextLabel" parent="TitleScreen2"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 400.0
+offset_bottom = 123.0
+text = "Dedicated to my brother, Eric"
+fit_content = true
+
+[node name="Timer" type="Timer" parent="TitleScreen2"]
+wait_time = 5.0
+one_shot = true
+autostart = true
