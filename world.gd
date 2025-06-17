@@ -28,7 +28,7 @@ var rooms = []
 var level_size
 
 @onready var tile_map = $TileMap/TileMapLayer
-@onready var player = $Tile0085
+@onready var player = $Player
 
 var player_tile
 var score = 0

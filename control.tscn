@@ -842,5 +842,8 @@ format = 2
 auto_translate_mode = 2
 tile_set = SubResource("TileSet_s2du1")
 
-[node name="Tile0085" type="Sprite2D" parent="World"]
+[node name="Player" type="Sprite2D" parent="World"]
 texture = ExtResource("118_tme03")
+
+[node name="Camera2D" type="Camera2D" parent="World/Player"]
+position_smoothing_enabled = true
