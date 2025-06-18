@@ -268,3 +268,7 @@ func set_tile(x, y, id):
 		return
 	map[x][y] = id
 	tile_map.set_cell(Vector2i(x, y), id, Vector2i(0,0))
+
+
+func _on_start_button_pressed() -> void:
+	pass # Replace with function body.
