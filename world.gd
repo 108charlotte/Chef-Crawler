@@ -37,11 +37,11 @@ var score = 0
 func _ready(): 
 	randomize()
 	build_level()
-
-	# Place player at center of tilemap grid
+	'''
 	var map_center = level_size / 2
 	var player_pos = tile_map.map_to_local(Vector2i(map_center)) + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 	player.position = player_pos
+	'''
 
 func build_level(): 
 	rooms.clear()
@@ -71,7 +71,16 @@ func build_level():
 			break
 	
 	connect_rooms()
+	
+	var start_room = rooms.front()
+	var player_x = start_room.position.x + 1 + randi() % int(start_room.size.x - 2)
+	var player_y = start_room.position.y + 1 + randi() % int(start_room.size.y - 2)
+	player_tile = Vector2(player_x, player_y)
+	update_visuals()
 
+func update_visuals(): 
+	player.position = player_tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
+	
 func connect_rooms(): 
 	var stone_graph = AStar2D.new()
 	var point_id = 0
