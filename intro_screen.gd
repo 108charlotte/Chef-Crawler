@@ -5,15 +5,23 @@ extends Control
 @onready var stats = game.get_node("Stats")
 @onready var start_button = $StartButton
 @onready var camera = game.get_node("World/Player/Camera2D")
+@onready var title_camera = $TitleScreenCamera
 
 func _ready():
 	world.visible = false
 	stats.visible = false
-	camera.zoom = Vector2(0.75,0.75)
-	print(camera.zoom)
+	title_camera.make_current()
+	start_button.pressed.connect(_on_startButton_pressed)
 
-func _on_start_button_pressed(): 
+func _input(event):
+	if event is InputEventMouseButton and event.pressed:
+		print("Mouse button pressed at: ", event.position)
+
+func _on_startButton_pressed() -> void:
+	print("Start button pressed!")
 	visible = false
+	camera.make_current()
+	print("current is now camera")
 
 	world.visible = true
 	stats.visible = true
