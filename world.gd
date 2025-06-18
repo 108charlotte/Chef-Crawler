@@ -53,12 +53,15 @@ func build_level():
 	var tiles_y = ceil(screen_size.y / TILE_SIZE)
 
 	level_size = Vector2(tiles_x, tiles_y)
+	
+	print("Building map with size: ", level_size)
 
-	for x in range(level_size.x): 
-		map.append([])
-		for y in range(level_size.y): 
-			map[x].append(Tile.Textured_Dirt)
-			tile_map.set_cell(Vector2i(x, y), Tile.Textured_Dirt, Vector2i(0, 0))
+	for x in range(int(level_size.x)): 
+		var row = []
+		for y in range(int(level_size.y)): 
+			row.append(Tile.Stone_Wall)
+			tile_map.set_cell(Vector2i(x, y), Tile.Stone_Wall, Vector2i(0, 0))
+		map.append(row)
 	
 	var free_regions = [Rect2(Vector2(2,2), level_size)]
 	var num_rooms = LEVEL_ROOM_COUNTS[level_num]
@@ -66,7 +69,124 @@ func build_level():
 		add_room(free_regions)
 		if free_regions.is_empty(): 
 			break
+	
+	connect_rooms()
 
+func connect_rooms(): 
+	var stone_graph = AStar2D.new()
+	var point_id = 0
+	for x in range(level_size.x): 
+		for y in range(level_size.y): 
+			if map[x][y] == Tile.Stone_Wall: 
+				stone_graph.add_point(point_id, Vector2(x, y))
+				
+				if x > 0 && map[x-1][y] == Tile.Stone_Wall: 
+					var left_point = stone_graph.get_closest_point(Vector2(x - 1, y))
+					stone_graph.connect_points(point_id, left_point)
+				
+				if y > 0 && map[x][y-1] == Tile.Stone_Wall: 
+					var above_point = stone_graph.get_closest_point(Vector2(x, y - 1))
+					stone_graph.connect_points(point_id, above_point)
+				
+				point_id += 1
+	
+	var room_graph = AStar2D.new()
+	point_id = 0
+	for room in rooms: 
+		var room_center = room.position + room.size / 2
+		room_graph.add_point(point_id, Vector2(room_center.x, room_center.y))
+		point_id += 1
+	
+	while !is_everything_connected(room_graph): 
+		add_random_connection(stone_graph, room_graph)
+
+func is_everything_connected(graph): 
+	var points = graph.get_point_ids()
+	var start = points[points.size() - 1]
+	for point in points: 
+		var path = graph.get_point_path(start, point)
+		if !path: 
+			return false
+	
+	return true
+	
+func add_random_connection(stone_graph, room_graph): 
+	var start_room_id = get_least_connected_point(room_graph)
+	var end_room_id = get_nearest_unconnected_point(room_graph, start_room_id)
+	
+	var start_position = pick_random_door_location(rooms[start_room_id])
+	var end_position = pick_random_door_location(rooms[end_room_id])
+	
+	var closest_start_point = stone_graph.get_closest_point(start_position)
+	var closest_end_point = stone_graph.get_closest_point(end_position)
+	
+	if closest_start_point == -1 or closest_end_point == -1:
+		print("No closest point found for start or end position!")
+		return
+	
+	var path = stone_graph.get_point_path(closest_start_point, closest_end_point)
+	assert(path)
+	
+	set_tile(start_position.x, start_position.y, Tile.Door)
+	set_tile(end_position.x, end_position.y, Tile.Door)
+	
+	for path_point in path: 
+		set_tile(path_point.x, path_point.y, Tile.Textured_Dirt)
+	
+	room_graph.connect_points(start_room_id, end_room_id)
+
+func get_least_connected_point(graph): 
+	var point_ids = graph.get_point_ids()
+	var least
+	var tied_for_least = []
+	
+	for point in point_ids: 
+		var count = graph.get_point_connections(point).size()
+		if least == null or count < least:
+			least = count
+			tied_for_least = [point]
+		elif count == least:
+			tied_for_least.append(point)
+		
+		return tied_for_least[randi() % tied_for_least.size()]
+
+func get_nearest_unconnected_point(graph, target_point): 
+	var target_position = graph.get_point_position(target_point)
+	var point_ids = graph.get_point_ids()
+	
+	var nearest
+	var tied_for_nearest = []
+	
+	for point in point_ids: 
+		if point == target_point: 
+			continue
+		
+		var path = graph.get_point_path(point, target_point)
+		if path: 
+			continue
+		
+		var dist = (graph.get_point_position(point) - target_position).length()
+		if !nearest || dist < nearest: 
+			nearest = dist
+			tied_for_nearest = [point]
+		elif dist == nearest: 
+			tied_for_nearest.append(point)
+		
+		return tied_for_nearest[randi() % tied_for_nearest.size()]
+
+func pick_random_door_location(room): 
+	var options = []
+	
+	for x in range(room.position.x + 1, room.end.x - 2): 
+		options.append(Vector2(x, room.position.y))
+		options.append(Vector2(x, room.end.y - 1))
+		
+	for y in range(room.position.y + 1, room.end.y - 2): 
+		options.append(Vector2(room.position.x, y))
+		options.append(Vector2(room.end.x - 1, y))
+	
+	return options[randi() % options.size()]
+				
 func add_room(free_regions): 
 	var region = free_regions[randi() % free_regions.size()]
 	var size_x = MIN_ROOM_DIMENSION
@@ -137,5 +257,14 @@ func cut_regions(free_regions, region_to_remove):
 		free_regions.append(add_region)
 		
 func set_tile(x, y, id): 
+	if x < 0 or x >= map.size():
+		print("Invalid x: ", x)
+		return
+	if typeof(map[x]) != TYPE_ARRAY:
+		print("map[", x, "] is not an array! Got: ", map[x])
+		return
+	if y < 0 or y >= map[x].size():
+		print("Invalid y: ", y, " in map[", x, "]")
+		return
 	map[x][y] = id
 	tile_map.set_cell(Vector2i(x, y), id, Vector2i(0,0))
