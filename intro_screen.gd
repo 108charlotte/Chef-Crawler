@@ -22,5 +22,5 @@ func _on_start_button_pressed() -> void:
 
 	world.visible = true
 	stats.visible = true
-	camera.zoom = Vector2(3, 3)
+	camera.zoom = Vector2(2, 2)
 	print("Current zoom: ", camera.zoom)

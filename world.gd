@@ -15,6 +15,8 @@ const LEVEL_ROOM_COUNTS = [5, 7, 9, 12, 15]
 const MIN_ROOM_DIMENSION = 5
 const MAX_ROOM_DIMENSION = 8
 
+var TILE_TO_TILEMAP = {}
+
 enum Tile {
 	Horizontal_Wall = 26, 
 	Left_Vertical_Wall = 15,
@@ -24,7 +26,7 @@ enum Tile {
 	Door = 45,  
 	Textured_Dirt = 49, 
 	Stone_Wall = 40, 
-	Black = 132
+	Black = 17
 }
 
 var level_num = 0
@@ -32,17 +34,26 @@ var map = []
 var rooms = []
 var level_size
 
-@onready var tile_map = $TileMap/Layer0
+@onready var tile_map_mini_dungeon = $TileMap_MiniDungeon
+@onready var tile_map_micro_roguelike = $TileMap_MicroRoguelike
 @onready var player = $Player
 
 var player_tile
 var score = 0
 
 func _ready(): 
-	var ts: TileSet = $TileMap.tile_set
-	for source_id in ts.get_source_ids():
-		var source = ts.get_source(source_id)
-		print("Source ID:", source_id, " Type:", source.get_class())
+	
+	TILE_TO_TILEMAP = {
+		Tile.Black: tile_map_micro_roguelike,
+		Tile.Stone_Wall: tile_map_micro_roguelike,
+		Tile.Horizontal_Wall: tile_map_mini_dungeon,
+		Tile.Left_Vertical_Wall: tile_map_mini_dungeon,
+		Tile.Right_Vertical_Wall: tile_map_mini_dungeon,
+		Tile.Thick_Vertical_Wall: tile_map_mini_dungeon,
+		Tile.Inside_Floor: tile_map_mini_dungeon,
+		Tile.Door: tile_map_mini_dungeon,
+		Tile.Textured_Dirt: tile_map_mini_dungeon
+	}
 
 	randomize()
 	build_level()
@@ -55,7 +66,8 @@ func _ready():
 func build_level(): 
 	rooms.clear()
 	map.clear()
-	tile_map.clear()
+	tile_map_mini_dungeon.clear()
+	tile_map_micro_roguelike.clear()
 	
 	var screen_size = get_viewport_rect().size
 	var tiles_x = ceil(screen_size.x / TILE_SIZE)
@@ -65,12 +77,15 @@ func build_level():
 	
 	print("Building map with size: ", level_size)
 
-	for x in range(int(level_size.x)): 
-		var row = []
-		for y in range(int(level_size.y)): 
-			row.append(Tile.Black)
-			tile_map.set_cell(Vector2i(x, y), Tile.Black, Vector2i(0, 0))
-		map.append(row)
+	for x in range(int(level_size.x)):
+		var column = []
+		for y in range(int(level_size.y)):
+			column.append(Tile.Black)
+		map.append(column)
+	
+	for x in range(int(level_size.x)):
+		for y in range(int(level_size.y)):
+			set_tile(x, y, Tile.Black)
 	
 	var free_regions = [Rect2(Vector2(2,2), level_size)]
 	var num_rooms = LEVEL_ROOM_COUNTS[level_num]
@@ -78,6 +93,7 @@ func build_level():
 		add_room(free_regions)
 		if free_regions.is_empty(): 
 			break
+
 	
 	connect_rooms()
 	
@@ -279,14 +295,19 @@ func cut_regions(free_regions, region_to_remove):
 		free_regions.append(add_region)
 		
 func set_tile(x, y, id): 
-	if x < 0 or x >= map.size():
-		print("Invalid x: ", x)
+	if x < 0 or x >= map.size() or typeof(map[x]) != TYPE_ARRAY or y < 0 or y >= map[x].size():
+		print("Invalid map coordinate: (", x, ",", y, ")")
 		return
-	if typeof(map[x]) != TYPE_ARRAY:
-		print("map[", x, "] is not an array! Got: ", map[x])
-		return
-	if y < 0 or y >= map[x].size():
-		print("Invalid y: ", y, " in map[", x, "]")
-		return
+
 	map[x][y] = id
-	tile_map.set_cell(Vector2i(x, y), id, Vector2i(0,0))
+	var coords = Vector2i(x, y)
+
+	tile_map_mini_dungeon.erase_cell(0, coords)
+	tile_map_micro_roguelike.erase_cell(0, coords)
+
+	if TILE_TO_TILEMAP.has(id):
+		var target_tilemap = TILE_TO_TILEMAP[id]
+		print("Setting tile ID %d on TileMap: %s at %s" % [id, target_tilemap.name, coords])
+		target_tilemap.set_cell(0, coords, id)
+	else:
+		print("⚠️ No TileMap defined for tile ID: ", id)
