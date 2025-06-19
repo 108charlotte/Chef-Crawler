@@ -16,11 +16,15 @@ const MIN_ROOM_DIMENSION = 5
 const MAX_ROOM_DIMENSION = 8
 
 enum Tile {
-	Wall = 26, 
+	Horizontal_Wall = 26, 
+	Left_Vertical_Wall = 15,
+	Right_Vertical_Wall = 13, 
+	Thick_Vertical_Wall = 58, 
 	Inside_Floor = 0, 
 	Door = 45,  
 	Textured_Dirt = 49, 
-	Stone_Wall = 40
+	Stone_Wall = 40, 
+	Black = 132
 }
 
 var level_num = 0
@@ -28,13 +32,18 @@ var map = []
 var rooms = []
 var level_size
 
-@onready var tile_map = $TileMap/TileMapLayer
+@onready var tile_map = $TileMap/Layer0
 @onready var player = $Player
 
 var player_tile
 var score = 0
 
 func _ready(): 
+	var ts: TileSet = $TileMap.tile_set
+	for source_id in ts.get_source_ids():
+		var source = ts.get_source(source_id)
+		print("Source ID:", source_id, " Type:", source.get_class())
+
 	randomize()
 	build_level()
 	'''
@@ -59,8 +68,8 @@ func build_level():
 	for x in range(int(level_size.x)): 
 		var row = []
 		for y in range(int(level_size.y)): 
-			row.append(Tile.Stone_Wall)
-			tile_map.set_cell(Vector2i(x, y), Tile.Stone_Wall, Vector2i(0, 0))
+			row.append(Tile.Black)
+			tile_map.set_cell(Vector2i(x, y), Tile.Black, Vector2i(0, 0))
 		map.append(row)
 	
 	var free_regions = [Rect2(Vector2(2,2), level_size)]
@@ -86,14 +95,14 @@ func connect_rooms():
 	var point_id = 0
 	for x in range(level_size.x): 
 		for y in range(level_size.y): 
-			if map[x][y] == Tile.Stone_Wall: 
+			if map[x][y] == Tile.Black: 
 				stone_graph.add_point(point_id, Vector2(x, y))
 				
-				if x > 0 && map[x-1][y] == Tile.Stone_Wall: 
+				if x > 0 && map[x-1][y] == Tile.Black: 
 					var left_point = stone_graph.get_closest_point(Vector2(x - 1, y))
 					stone_graph.connect_points(point_id, left_point)
 				
-				if y > 0 && map[x][y-1] == Tile.Stone_Wall: 
+				if y > 0 && map[x][y-1] == Tile.Black: 
 					var above_point = stone_graph.get_closest_point(Vector2(x, y - 1))
 					stone_graph.connect_points(point_id, above_point)
 				
@@ -197,6 +206,10 @@ func pick_random_door_location(room):
 	return options[randi() % options.size()]
 				
 func add_room(free_regions): 
+	if free_regions.is_empty():
+		print("❌ No free regions left! Aborting room generation.")
+		return
+	
 	var region = free_regions[randi() % free_regions.size()]
 	var size_x = MIN_ROOM_DIMENSION
 	if region.size.x > MIN_ROOM_DIMENSION: 
@@ -221,12 +234,12 @@ func add_room(free_regions):
 	rooms.append(room)
 	
 	for x in range(start_x, start_x + size_x): 
-		set_tile(x, start_y, Tile.Stone_Wall)
-		set_tile(x, start_y + size_y - 1, Tile.Stone_Wall)
+		set_tile(x, start_y, Tile.Horizontal_Wall)
+		set_tile(x, start_y + size_y - 1, Tile.Horizontal_Wall)
 	
 	for y in range(start_y + 1, start_y + size_y - 1): 
-		set_tile(start_x, y, Tile.Stone_Wall)
-		set_tile(start_x + size_x - 1, y, Tile.Stone_Wall)
+		set_tile(start_x, y, Tile.Thick_Vertical_Wall)
+		set_tile(start_x + size_x - 1, y, Tile.Thick_Vertical_Wall)
 
 	for x in range(start_x + 1, start_x + size_x - 1):
 		for y in range(start_y + 1, start_y + size_y - 1):
@@ -277,7 +290,3 @@ func set_tile(x, y, id):
 		return
 	map[x][y] = id
 	tile_map.set_cell(Vector2i(x, y), id, Vector2i(0,0))
-
-
-func _on_start_button_pressed() -> void:
-	pass # Replace with function body.
