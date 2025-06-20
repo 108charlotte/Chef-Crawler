@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="chef-crawler"
-run/main_scene="uid://dei60x38a8c35"
+run/main_scene="uid://dijm8rxq0dm5p"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
 
