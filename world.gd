@@ -302,10 +302,15 @@ func add_room(free_regions):
 	for y in range(start_y + 1, start_y + size_y - 1): 
 		set_tile(start_x, y, Tile.Left_Wall)
 		set_tile(start_x + size_x - 1, y, Tile.Right_Wall)
+	
+	set_tile(start_x, start_y, Tile.Left_Top_Corner)
+	set_tile(start_x + size_x - 1, start_y, Tile.Right_Top_Corner)
+	set_tile(start_x, start_y + size_y - 1, Tile.Left_Bottom_Corner)
+	set_tile(start_x + size_x - 1, start_y + size_y - 1, Tile.Right_Bottom_Corner)
 
 	for x in range(start_x + 1, start_x + size_x - 1):
 		for y in range(start_y + 1, start_y + size_y - 1):
-			set_tile(x, y, Tile.Stone_Wall)
+			set_tile(x, y, Tile.Floor)
 			
 			
 	cut_regions(free_regions, room)
