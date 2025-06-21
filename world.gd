@@ -33,6 +33,18 @@ enum Tile {
 	Open_Door, 
 	Ladder, 
 	Crown, 
+	Skull, 
+	Goo, 
+	Bone, 
+	Cauldron, 
+	Cobweb, 
+	Egg, 
+	Fish, 
+	Apple, 
+	Pear, 
+	Meat, 
+	Stick, 
+	Carrot
 }
 
 var level_num = 0
@@ -44,6 +56,7 @@ var level_size
 @onready var player = $Player
 @onready var camera = $Player/Camera2D
 @onready var level = get_node("../Stats/Level")
+@onready var scoreElement = get_node("../Stats/Score")
 
 var player_tile
 var score = 0
@@ -160,11 +173,11 @@ func build_level():
 	else:
 		print("🚨 No reachable rooms for ladder placement")
 
-	
-	level.text = "Level: " + str(level_num)
+	level.text = "Level: " + str(level_num + 1)
 
 func update_visuals(): 
 	player.position = player_tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
+	scoreElement.text = "Score: " + str(score)
 	
 func tile_to_id(x: int, y: int) -> int:
 	return x + y * int(level_size.x)
