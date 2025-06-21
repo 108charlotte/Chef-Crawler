@@ -15,7 +15,7 @@ const LEVEL_ROOM_COUNTS = [5, 7, 9, 12, 15]
 const MIN_ROOM_DIMENSION = 5
 const MAX_ROOM_DIMENSION = 8
 
-const WALKABLE_TILES = [Tile.Stone_Wall, Tile.Path, Tile.Door, Tile.Floor]
+const WALKABLE_TILES = [Tile.Stone_Wall, Tile.Path, Tile.Door, Tile.Floor, Tile.Open_Door]
 
 enum Tile {
 	Floor, 
@@ -29,7 +29,8 @@ enum Tile {
 	Right_Top_Corner, 
 	Stone_Wall, 
 	Door, 
-	Path
+	Path, 
+	Open_Door, 
 }
 
 var level_num = 0
@@ -55,6 +56,33 @@ func _ready():
 	var player_pos = tile_map.map_to_local(Vector2i(map_center)) + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 	player.position = player_pos
 	'''
+
+func _input(event): 
+	if !event.is_pressed(): 
+		return
+	if event.is_action("Left"): 
+		try_move(-1, 0)
+	elif event.is_action("Right"): 
+		try_move(1, 0)
+	elif event.is_action("Up"): 
+		try_move(0, -1)
+	elif event.is_action("Down"): 
+		try_move(0, 1)
+
+func try_move(dx, dy): 
+	var x = player_tile.x + dx
+	var y = player_tile.y + dy
+	print("Trying to move to: ", x, y)
+	var tile_type = Tile.Stone_Wall
+	if x>= 0 && x < level_size.x && y >= 0 && y < level_size.y: 
+		tile_type = map[x][y]
+	
+	if tile_type == Tile.Door: 
+		set_tile(x, y, Tile.Open_Door)
+	elif tile_type in WALKABLE_TILES && tile_type != Tile.Stone_Wall:
+		player_tile = Vector2(x, y)
+	
+	update_visuals()
 
 func build_level(): 
 	rooms.clear()
@@ -85,7 +113,6 @@ func build_level():
 		add_room(free_regions)
 		if free_regions.is_empty(): 
 			break
-
 	
 	connect_rooms()
 	

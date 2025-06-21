@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://dei60x38a8c35"]
+[gd_scene load_steps=31 format=3 uid="uid://dei60x38a8c35"]
 
 [ext_resource type="Script" uid="uid://u1ovuac2wnt6" path="res://world.gd" id="1_k3vlv"]
 [ext_resource type="Texture2D" uid="uid://cqqmd5a771j3p" path="res://assets/tiles/tile016.png" id="2_g31lc"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://dgkqyhsgfm5yb" path="res://assets/tiles/tile067.png" id="4_kbped"]
 [ext_resource type="Texture2D" uid="uid://jkm8m1d8e46d" path="res://assets/tiles/tile069.png" id="5_fj5cn"]
 [ext_resource type="Texture2D" uid="uid://bffl0iteeclmx" path="res://assets/tiles/tile117.png" id="6_fj5cn"]
+[ext_resource type="Texture2D" uid="uid://b7ggrjod1n6hq" path="res://assets/tiles/tile151.png" id="6_knq72"]
 [ext_resource type="Texture2D" uid="uid://cgtjrethstdfl" path="res://assets/tiles/tile116.png" id="7_6a6wx"]
 [ext_resource type="Texture2D" uid="uid://b2hwqbttdhgu1" path="res://assets/tiles/tile118.png" id="8_sky72"]
 [ext_resource type="Texture2D" uid="uid://bh8oij0vi41in" path="res://assets/tiles/tile018.png" id="12_tam4a"]
@@ -29,6 +30,10 @@ texture = ExtResource("4_am1vj")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_oq4si"]
 texture = ExtResource("36_bg87n")
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pi4e7"]
+texture = ExtResource("6_knq72")
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sky72"]
@@ -76,6 +81,7 @@ sources/8 = SubResource("TileSetAtlasSource_knq72")
 sources/9 = SubResource("TileSetAtlasSource_m4egf")
 sources/10 = SubResource("TileSetAtlasSource_xvdhi")
 sources/11 = SubResource("TileSetAtlasSource_oq4si")
+sources/12 = SubResource("TileSetAtlasSource_pi4e7")
 
 [sub_resource type="GDScript" id="GDScript_0fbet"]
 script/source = "extends Control
