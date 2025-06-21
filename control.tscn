@@ -1,21 +1,22 @@
 [gd_scene load_steps=29 format=3 uid="uid://dei60x38a8c35"]
 
 [ext_resource type="Script" uid="uid://u1ovuac2wnt6" path="res://world.gd" id="1_k3vlv"]
+[ext_resource type="Texture2D" uid="uid://cqqmd5a771j3p" path="res://assets/tiles/tile016.png" id="2_g31lc"]
 [ext_resource type="Texture2D" uid="uid://ujngmn7gfomu" path="res://assets/tiles/tile150.png" id="4_am1vj"]
 [ext_resource type="Texture2D" uid="uid://dgkqyhsgfm5yb" path="res://assets/tiles/tile067.png" id="4_kbped"]
 [ext_resource type="Texture2D" uid="uid://jkm8m1d8e46d" path="res://assets/tiles/tile069.png" id="5_fj5cn"]
 [ext_resource type="Texture2D" uid="uid://bffl0iteeclmx" path="res://assets/tiles/tile117.png" id="6_fj5cn"]
 [ext_resource type="Texture2D" uid="uid://cgtjrethstdfl" path="res://assets/tiles/tile116.png" id="7_6a6wx"]
 [ext_resource type="Texture2D" uid="uid://b2hwqbttdhgu1" path="res://assets/tiles/tile118.png" id="8_sky72"]
-[ext_resource type="Texture2D" uid="uid://cd8vhsefle20u" path="res://assets/tiles/tile017.png" id="11_loq2j"]
 [ext_resource type="Texture2D" uid="uid://bh8oij0vi41in" path="res://assets/tiles/tile018.png" id="12_tam4a"]
 [ext_resource type="Texture2D" uid="uid://c65hs7isr20w5" path="res://assets/tiles/tile019.png" id="13_3kp4k"]
 [ext_resource type="Texture2D" uid="uid://bugxw8us7ssg2" path="res://assets/tiles/tile637.png" id="13_g31lc"]
+[ext_resource type="Texture2D" uid="uid://b1afxdqqn7vy4" path="res://assets/tiles/tile077.png" id="14_g31lc"]
 [ext_resource type="Texture2D" uid="uid://cvubw676oudje" path="res://assets/tiles/tile020.png" id="15_gg2cy"]
 [ext_resource type="Texture2D" uid="uid://cm0ii2u58gxjn" path="res://assets/tiles/tile004.png" id="36_bg87n"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_iy58a"]
-texture = ExtResource("11_loq2j")
+texture = ExtResource("2_g31lc")
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6a6wx"]
@@ -76,9 +77,6 @@ sources/9 = SubResource("TileSetAtlasSource_m4egf")
 sources/10 = SubResource("TileSetAtlasSource_xvdhi")
 sources/11 = SubResource("TileSetAtlasSource_oq4si")
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_kbped"]
-load_path = "res://.godot/imported/tile_0085.png-ff7a08d07396fa1b8661043d622608ce.ctex"
-
 [sub_resource type="GDScript" id="GDScript_0fbet"]
 script/source = "extends Control
 
@@ -138,7 +136,7 @@ tile_set = SubResource("TileSet_pxugv")
 format = 2
 
 [node name="Player" type="Sprite2D" parent="World"]
-texture = SubResource("CompressedTexture2D_kbped")
+texture = ExtResource("14_g31lc")
 
 [node name="Camera2D" type="Camera2D" parent="World/Player"]
 zoom = Vector2(2, 2)

@@ -114,7 +114,7 @@ func connect_rooms():
 					if stone_graph.has_point(left_id): 
 						stone_graph.connect_points(id, left_id)
 
-				if y > 0 && map[x][y-1] == Tile.Stone_Wall: 
+				if y > 0 && map[x][y-1] in WALKABLE_TILES: 
 					var up_id = tile_to_id(x, y - 1)
 					if stone_graph.has_point(up_id):
 						stone_graph.connect_points(id, up_id)
@@ -186,7 +186,10 @@ func add_random_connection(stone_graph, room_graph):
 	set_tile(end_position.x, end_position.y, Tile.Door)
 	
 	for path_point in path: 
-		set_tile(path_point.x, path_point.y, Tile.Path)
+		if map[path_point.x][path_point.y] == Tile.Door:
+			print("✅ Path includes door at", path_point)
+		else: 
+			set_tile(path_point.x, path_point.y, Tile.Path)
 	
 	room_graph.connect_points(start_room_id, end_room_id)
 
