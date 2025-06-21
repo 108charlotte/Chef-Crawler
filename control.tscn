@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://dei60x38a8c35"]
+[gd_scene load_steps=35 format=3 uid="uid://dei60x38a8c35"]
 
 [ext_resource type="Script" uid="uid://u1ovuac2wnt6" path="res://world.gd" id="1_k3vlv"]
 [ext_resource type="Texture2D" uid="uid://cqqmd5a771j3p" path="res://assets/tiles/tile016.png" id="2_g31lc"]
@@ -8,6 +8,8 @@
 [ext_resource type="Texture2D" uid="uid://bffl0iteeclmx" path="res://assets/tiles/tile117.png" id="6_fj5cn"]
 [ext_resource type="Texture2D" uid="uid://b7ggrjod1n6hq" path="res://assets/tiles/tile151.png" id="6_knq72"]
 [ext_resource type="Texture2D" uid="uid://cgtjrethstdfl" path="res://assets/tiles/tile116.png" id="7_6a6wx"]
+[ext_resource type="Texture2D" uid="uid://b08p5lfym573j" path="res://assets/tiles/tile070.png" id="7_xvdhi"]
+[ext_resource type="Texture2D" uid="uid://cijuhgfjkrbty" path="res://assets/tiles/tile142.png" id="8_oq4si"]
 [ext_resource type="Texture2D" uid="uid://b2hwqbttdhgu1" path="res://assets/tiles/tile118.png" id="8_sky72"]
 [ext_resource type="Texture2D" uid="uid://bh8oij0vi41in" path="res://assets/tiles/tile018.png" id="12_tam4a"]
 [ext_resource type="Texture2D" uid="uid://c65hs7isr20w5" path="res://assets/tiles/tile019.png" id="13_3kp4k"]
@@ -34,6 +36,14 @@ texture = ExtResource("36_bg87n")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pi4e7"]
 texture = ExtResource("6_knq72")
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kuuv8"]
+texture = ExtResource("7_xvdhi")
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ou021"]
+texture = ExtResource("8_oq4si")
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sky72"]
@@ -82,6 +92,8 @@ sources/9 = SubResource("TileSetAtlasSource_m4egf")
 sources/10 = SubResource("TileSetAtlasSource_xvdhi")
 sources/11 = SubResource("TileSetAtlasSource_oq4si")
 sources/12 = SubResource("TileSetAtlasSource_pi4e7")
+sources/13 = SubResource("TileSetAtlasSource_kuuv8")
+sources/14 = SubResource("TileSetAtlasSource_ou021")
 
 [sub_resource type="GDScript" id="GDScript_0fbet"]
 script/source = "extends Control
@@ -113,7 +125,7 @@ offset_right = 259.0
 offset_bottom = 13.0
 color = Color(0.180005, 0.180005, 0.180005, 0.847059)
 
-[node name="Label" type="Label" parent="Stats"]
+[node name="Level" type="Label" parent="Stats"]
 offset_left = 7.0
 offset_right = 47.0
 offset_bottom = 23.0
@@ -145,7 +157,6 @@ format = 2
 texture = ExtResource("14_g31lc")
 
 [node name="Camera2D" type="Camera2D" parent="World/Player"]
-zoom = Vector2(2, 2)
 position_smoothing_enabled = true
 
 [node name="InputManager" type="Control" parent="."]

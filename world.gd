@@ -31,6 +31,8 @@ enum Tile {
 	Door, 
 	Path, 
 	Open_Door, 
+	Ladder, 
+	Crown, 
 }
 
 var level_num = 0
@@ -41,21 +43,14 @@ var level_size
 @onready var tile_map = $TileMap
 @onready var player = $Player
 @onready var camera = $Player/Camera2D
+@onready var level = get_node("../Stats/Level")
 
 var player_tile
 var score = 0
 
 func _ready(): 
-	
-	tile_map.set_cell(0, Vector2i(0,0), Tile.Floor, Vector2i(0,0))
-
 	randomize()
 	build_level()
-	'''
-	var map_center = level_size / 2
-	var player_pos = tile_map.map_to_local(Vector2i(map_center)) + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
-	player.position = player_pos
-	'''
 
 func _input(event): 
 	if !event.is_pressed(): 
@@ -79,10 +74,25 @@ func try_move(dx, dy):
 	
 	if tile_type == Tile.Door: 
 		set_tile(x, y, Tile.Open_Door)
-	elif tile_type in WALKABLE_TILES && tile_type != Tile.Stone_Wall:
+	elif tile_type == Tile.Crown: 
+		print("Victory! You found the crown!")
+		show_victory_screen()
+	elif tile_type == Tile.Ladder:
 		player_tile = Vector2(x, y)
-	
+		level_num += 1
+		score += 20
+		if level_num < LEVEL_SIZES.size():
+			build_level()
+		else:
+			score += 1000
+	elif tile_type in WALKABLE_TILES and tile_type != Tile.Stone_Wall:
+		player_tile = Vector2(x, y)
+		
 	update_visuals()
+
+func show_victory_screen(): 
+	set_process_input(false)
+	get_tree().change_scene_to_file("res://victory.tscn")
 
 func build_level(): 
 	rooms.clear()
@@ -115,12 +125,43 @@ func build_level():
 			break
 	
 	connect_rooms()
-	
+
 	var start_room = rooms.front()
 	var player_x = start_room.position.x + 1 + randi() % int(start_room.size.x - 2)
 	var player_y = start_room.position.y + 1 + randi() % int(start_room.size.y - 2)
 	player_tile = Vector2(player_x, player_y)
 	update_visuals()
+
+	var graph = build_stone_graph()
+	var start_id = tile_to_id(player_tile.x, player_tile.y)
+
+	var reachable_rooms = []
+	for room in rooms:
+		if room == start_room:
+			continue
+		for x in range(room.position.x + 1, room.end.x - 1):
+			for y in range(room.position.y + 1, room.end.y - 1):
+				var tile_id = tile_to_id(x, y)
+				if graph.has_point(tile_id):
+					var path = graph.get_point_path(start_id, tile_id)
+					if not path.is_empty():
+						reachable_rooms.append(room)
+						break
+			if reachable_rooms.has(room):
+				break
+
+	if reachable_rooms.size() > 0:
+		var end_room = reachable_rooms[randi() % reachable_rooms.size()]
+		var ladder_x = end_room.position.x + 1 + randi() % int(end_room.size.x - 2)
+		var ladder_y = end_room.position.y + 1 + randi() % int(end_room.size.y - 2)
+		set_tile(ladder_x, ladder_y, Tile.Ladder)
+		if level_num == LEVEL_SIZES.size() - 1:
+			set_tile(ladder_x, ladder_y, Tile.Crown)
+	else:
+		print("🚨 No reachable rooms for ladder placement")
+
+	
+	level.text = "Level: " + str(level_num)
 
 func update_visuals(): 
 	player.position = player_tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
@@ -132,16 +173,16 @@ func connect_rooms():
 	var stone_graph = AStar2D.new()
 	for x in range(int(level_size.x)): 
 		for y in range(int(level_size.y)): 
-			if map[x][y] in WALKABLE_TILES: 
+			if map[x][y] in WALKABLE_TILES && map[x][y] != Tile.Stone_Wall: 
 				var id = tile_to_id(x, y)
 				stone_graph.add_point(id, Vector2(x, y))
 				
-				if x > 0 && map[x-1][y] in WALKABLE_TILES: 
+				if x > 0 && map[x-1][y] in WALKABLE_TILES && map[x][y] != Tile.Stone_Wall: 
 					var left_id = tile_to_id(x - 1, y)
 					if stone_graph.has_point(left_id): 
 						stone_graph.connect_points(id, left_id)
 
-				if y > 0 && map[x][y-1] in WALKABLE_TILES: 
+				if y > 0 && map[x][y-1] in WALKABLE_TILES && map[x][y] != Tile.Stone_Wall: 
 					var up_id = tile_to_id(x, y - 1)
 					if stone_graph.has_point(up_id):
 						stone_graph.connect_points(id, up_id)
