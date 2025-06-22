@@ -200,9 +200,7 @@ func build_level():
 	map.clear()
 	tile_map.clear()
 	
-	for enemy in enemies: 
-		enemy.remove(DeadEnemyScene, game)
-	enemies.clear()
+	cleanup_enemies()
 
 	level_size = LEVEL_SIZES[level_num]
 	
@@ -228,14 +226,14 @@ func build_level():
 	connect_rooms()
 
 	var start_room = rooms.front()
-	var player_x = start_room.position.x + 1 + randi() % int(start_room.size.x - 2)
-	var player_y = start_room.position.y + 1 + randi() % int(start_room.size.y - 2)
+	var player_x = int(start_room.position.x + 1 + randi() % int(start_room.size.x - 2))
+	var player_y = int(start_room.position.y + 1 + randi() % int(start_room.size.y - 2))
 	player_tile = Vector2(player_x, player_y)
 	
 	update_visuals()
 
 	var graph = build_stone_graph()
-	var start_id = tile_to_id(player_tile.x, player_tile.y)
+	var start_id = tile_to_id(int(player_tile.x), int(player_tile.y))
 	enemy_pathfinding = build_enemy_pathfinding_graph()
 	
 	var num_enemies = LEVEL_ENEMY_COUNTS[level_num]
@@ -252,8 +250,15 @@ func build_level():
 		
 		if x >= 0 and x < map.size() and y >= 0 and y < map[x].size():
 			if !blocked && map[x][y] in WALKABLE_TILES: 
+				print("Trying to spawn enemy at ", x, ",", y, " tile type: ", map[x][y])
 				var enemy = Enemy.new(self, randi() % 2, x, y, EnemyScene)
-				enemies.append(enemy)
+				var tile_id = tile_to_id(x, y)
+				if map[x][y] not in [Tile.Floor, Tile.Path, Tile.Open_Door] or !enemy_pathfinding.has_point(tile_id): 
+					if enemy.sprite_node and enemy.sprite_node.is_inside_tree(): 
+						enemy.sprite_node.queue_free()
+					enemy = null
+				else: 
+					enemies.append(enemy)
 
 	var reachable_room_set = {}
 
@@ -281,6 +286,12 @@ func build_level():
 
 	level.text = "Level: " + str(level_num + 1)
 
+func cleanup_enemies():
+	for enemy in enemies:
+		if enemy.sprite_node and enemy.sprite_node.is_inside_tree():
+			enemy.sprite_node.queue_free()
+	enemies.clear()
+
 func clear_path(tile): 
 	var new_point = enemy_pathfinding.get_available_point_id()
 	enemy_pathfinding.add_point(new_point, Vector2(tile.x, tile.y))
@@ -292,7 +303,7 @@ func clear_path(tile):
 		points_to_connect.append(enemy_pathfinding.get_closest_point(Vector2(tile.x, tile.y - 1)))
 	if tile.x < level_size.x - 1 && map[tile.x + 1][tile.y] in WALKABLE_TILES: 
 		points_to_connect.append(enemy_pathfinding.get_closest_point(Vector2(tile.x + 1, tile.y)))
-	if tile.y < level.size.y - 1 && map[tile.x][tile.y + 1] in WALKABLE_TILES: 
+	if tile.y < level_size.y - 1 && map[tile.x][tile.y + 1] in WALKABLE_TILES: 
 		points_to_connect.append(enemy_pathfinding.get_closest_point(Vector2(tile.x, tile.y + 1)))
 	
 	for point in points_to_connect: 
@@ -337,10 +348,6 @@ func connect_rooms():
 	var attempts = 0
 	while not is_everything_connected(room_graph):
 		add_random_connection(stone_graph, room_graph)
-		attempts += 1
-		if attempts > 100:
-			print("❌ Failed to connect rooms after 100 attempts.")
-			break
 
 func is_everything_connected(graph): 
 	var points = graph.get_point_ids()
@@ -560,7 +567,9 @@ func cut_regions(free_regions, region_to_remove):
 
 func damage_player(dmg): 
 	player_hp = max(0, player_hp - dmg)
+	print("Damage player: hp now ", player_hp)
 	if player_hp == 0: 
+		print("Player died, changing to lose scene")
 		get_tree().change_scene_to_file("res://lose.tscn")
 
 func build_enemy_pathfinding_graph() -> AStar2D:
