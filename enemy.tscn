@@ -1,0 +1,44 @@
+[gd_scene load_steps=7 format=3 uid="uid://mt4d44ttc7x8"]
+
+[ext_resource type="Texture2D" uid="uid://bn5sif5chywkt" path="res://assets/tiles/tile459.png" id="1_epg4t"]
+[ext_resource type="Texture2D" uid="uid://bw0yeym7ol2tx" path="res://assets/tiles/tile460.png" id="2_3yqyl"]
+[ext_resource type="Texture2D" uid="uid://b668u3s5gshtx" path="res://assets/tiles/tile461.png" id="3_wujgv"]
+[ext_resource type="Texture2D" uid="uid://gh3dqolivk0m" path="res://assets/tiles/tile463.png" id="4_hb8ge"]
+[ext_resource type="Texture2D" uid="uid://cv250qdeqievm" path="res://assets/tiles/tile462.png" id="5_e1ltt"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_3dain"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_epg4t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_3yqyl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_wujgv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_hb8ge")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_e1ltt")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Enemy" type="AnimatedSprite2D"]
+sprite_frames = SubResource("SpriteFrames_3dain")
+
+[node name="HPBar" type="ColorRect" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -14.0
+offset_top = -8.0
+offset_right = -2.0
+offset_bottom = -6.0
+grow_horizontal = 2
+color = Color(1, 0, 0, 1)

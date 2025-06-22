@@ -11,6 +11,7 @@ const LEVEL_SIZES = [
 ]
 
 const LEVEL_ROOM_COUNTS = [5, 7, 9, 12, 15]
+const LEVEL_ENEMY_COUNTS = [5, 8, 12, 18, 26]
 
 const MIN_ROOM_DIMENSION = 5
 const MAX_ROOM_DIMENSION = 8
@@ -44,13 +45,48 @@ enum Tile {
 	Pear, 
 	Meat, 
 	Stick, 
-	Carrot
+	Carrot, 
+	Ham, 
+	Cheese, 
+	Scroll, 
 }
+
+var EnemyScene := preload("res://enemy.tscn")
+
+class Enemy extends RefCounted: 
+	var sprite_node
+	var tile
+	var full_hp
+	var hp
+	var dead = false
+	
+	func _init(game, enemy_level, x, y, enemy_scene): 
+		full_hp = 1 + enemy_level * 2
+		hp = full_hp
+		tile = Vector2(x, y)
+		sprite_node = enemy_scene.instantiate()
+		sprite_node.frame = enemy_level
+		sprite_node.position = tile * TILE_SIZE
+		game.add_child(sprite_node)
+	
+	func remove(): 
+		sprite_node.queue_free()
+	
+	func take_damage(game, dmg): 
+		if dead: 
+			return
+		hp = max(0, hp - dmg)
+		sprite_node.get_node("HPBar").size.x = TILE_SIZE * hp / full_hp
+		
+		if hp == 0: 
+			dead = true
+			game.score += 10 * full_hp
 
 var level_num = 0
 var map = []
 var rooms = []
 var level_size
+var enemies = []
 
 @onready var tile_map = $TileMap
 @onready var player = $Player
@@ -62,6 +98,9 @@ var player_tile
 var score = 0
 
 func _ready(): 
+	level_num = 0
+	score = 0
+	
 	randomize()
 	build_level()
 
@@ -99,7 +138,17 @@ func try_move(dx, dy):
 		else:
 			score += 1000
 	elif tile_type in WALKABLE_TILES and tile_type != Tile.Stone_Wall:
-		player_tile = Vector2(x, y)
+		var blocked = false
+		for enemy in enemies: 
+			if enemy.tile.x == x && enemy.tile.y == y: 
+				enemy.take_damage(self, 1)
+				if enemy.dead: 
+					enemy.remove()
+					enemies.erase(enemy)
+				blocked = true
+				break
+		if !blocked: 
+			player_tile = Vector2(x, y)
 		
 	update_visuals()
 
@@ -111,6 +160,10 @@ func build_level():
 	rooms.clear()
 	map.clear()
 	tile_map.clear()
+	
+	for enemy in enemies: 
+		enemy.remove()
+	enemies.clear()
 	
 	var screen_size = get_viewport_rect().size
 	var tiles_x = ceil(screen_size.x / TILE_SIZE)
@@ -143,25 +196,41 @@ func build_level():
 	var player_x = start_room.position.x + 1 + randi() % int(start_room.size.x - 2)
 	var player_y = start_room.position.y + 1 + randi() % int(start_room.size.y - 2)
 	player_tile = Vector2(player_x, player_y)
+	
+	var num_enemies = LEVEL_ENEMY_COUNTS[level_num]
+	for i in range(num_enemies): 
+		var room = rooms[1 + randi() % (rooms.size() - 1)]
+		var x = room.position.x + 1 + randi() % int(room.size.x - 2)
+		var y = room.position.y + 1 + randi() % int(room.size.y - 2)
+	
+		var blocked = false
+		for enemy in enemies: 
+			if enemy.tile.x  == x && enemy.tile.y == y: 
+				blocked = true
+				break
+		
+		if !blocked: 
+			var enemy = Enemy.new(self, randi() % 2, x, y, EnemyScene)
+			enemies.append(enemy)
+	
 	update_visuals()
 
 	var graph = build_stone_graph()
 	var start_id = tile_to_id(player_tile.x, player_tile.y)
 
-	var reachable_rooms = []
-	for room in rooms:
-		if room == start_room:
-			continue
-		for x in range(room.position.x + 1, room.end.x - 1):
-			for y in range(room.position.y + 1, room.end.y - 1):
-				var tile_id = tile_to_id(x, y)
-				if graph.has_point(tile_id):
-					var path = graph.get_point_path(start_id, tile_id)
-					if not path.is_empty():
-						reachable_rooms.append(room)
-						break
-			if reachable_rooms.has(room):
-				break
+	var reachable_room_set = {}
+
+	for x in range(int(level_size.x)):
+		for y in range(int(level_size.y)):
+			var tile_id = tile_to_id(x, y)
+			if graph.has_point(tile_id):
+				var path = graph.get_point_path(start_id, tile_id)
+				if path.size() > 0:
+					for room in rooms:
+						if room.has_point(Vector2(x, y)):
+							reachable_room_set[room] = true
+
+	var reachable_rooms = reachable_room_set.keys()
 
 	if reachable_rooms.size() > 0:
 		var end_room = reachable_rooms[randi() % reachable_rooms.size()]
