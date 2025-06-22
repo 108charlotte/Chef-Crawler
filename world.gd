@@ -15,6 +15,7 @@ const LEVEL_ENEMY_COUNTS = [5, 8, 12, 18, 26]
 
 const MIN_ROOM_DIMENSION = 5
 const MAX_ROOM_DIMENSION = 8
+const PLAYER_START_HP = 5
 
 const WALKABLE_TILES = [Tile.Path, Tile.Door, Tile.Floor, Tile.Open_Door]
 
@@ -84,6 +85,7 @@ class Enemy extends RefCounted:
 		await game.get_tree().create_timer(1.0).timeout
 		if dead_sprite and dead_sprite.is_inside_tree():
 			dead_sprite.queue_free()
+			sprite_node = null
 	
 	func take_damage(game, dmg): 
 		if dead: 
@@ -94,6 +96,24 @@ class Enemy extends RefCounted:
 		if hp == 0: 
 			dead = true
 			game.score += 10 * full_hp
+	
+	func act(game): 
+		var my_point = game.enemy_pathfinding.get_closest_point(Vector2(tile.x, tile.y))
+		var player_point = game.enemy_pathfinding.get_closest_point(Vector2(game.player_tile.x, game.player_tile.y))
+		var path = game.enemy_pathfinding.get_point_path(my_point, player_point)
+		if path && path.size() > 1: 
+			var move_tile = Vector2(path[1].x, path[1].y)
+		
+			if move_tile == game.player_tile: 
+				game.damage_player(1)
+			else: 
+				var blocked = false
+				for enemy in game.enemies: 
+					if enemy.tile == move_tile: 
+						blocked = true
+						break
+				if !blocked: 
+					tile = move_tile
 
 var level_num = 0
 var map = []
@@ -107,9 +127,12 @@ var enemies = []
 @onready var level = get_node("../Stats/Level")
 @onready var scoreElement = get_node("../Stats/Score")
 @onready var game = get_node(".")
+@onready var hpElement = get_node("../Stats/HP")
 
 var player_tile
 var score = 0
+var enemy_pathfinding
+var player_hp = PLAYER_START_HP
 
 func _ready(): 
 	level_num = 0
@@ -133,9 +156,8 @@ func _input(event):
 func try_move(dx, dy): 
 	var x = player_tile.x + dx
 	var y = player_tile.y + dy
-	print("Trying to move to: ", x, y)
 	var tile_type = Tile.Stone_Wall
-	if x>= 0 && x < level_size.x && y >= 0 && y < level_size.y: 
+	if x >= 0 && x < level_size.x && y >= 0 && y < level_size.y: 
 		tile_type = map[x][y]
 	
 	if tile_type == Tile.Door: 
@@ -163,6 +185,9 @@ func try_move(dx, dy):
 				break
 		if !blocked: 
 			player_tile = Vector2(x, y)
+	
+	for enemy in enemies: 
+		enemy.act(self)
 		
 	update_visuals()
 
@@ -207,6 +232,12 @@ func build_level():
 	var player_y = start_room.position.y + 1 + randi() % int(start_room.size.y - 2)
 	player_tile = Vector2(player_x, player_y)
 	
+	update_visuals()
+
+	var graph = build_stone_graph()
+	var start_id = tile_to_id(player_tile.x, player_tile.y)
+	enemy_pathfinding = build_enemy_pathfinding_graph()
+	
 	var num_enemies = LEVEL_ENEMY_COUNTS[level_num]
 	for i in range(num_enemies): 
 		var room = rooms[1 + randi() % (rooms.size() - 1)]
@@ -219,14 +250,10 @@ func build_level():
 				blocked = true
 				break
 		
-		if !blocked && map[x][y] in WALKABLE_TILES: 
-			var enemy = Enemy.new(self, randi() % 2, x, y, EnemyScene)
-			enemies.append(enemy)
-	
-	update_visuals()
-
-	var graph = build_stone_graph()
-	var start_id = tile_to_id(player_tile.x, player_tile.y)
+		if x >= 0 and x < map.size() and y >= 0 and y < map[x].size():
+			if !blocked && map[x][y] in WALKABLE_TILES: 
+				var enemy = Enemy.new(self, randi() % 2, x, y, EnemyScene)
+				enemies.append(enemy)
 
 	var reachable_room_set = {}
 
@@ -254,9 +281,32 @@ func build_level():
 
 	level.text = "Level: " + str(level_num + 1)
 
+func clear_path(tile): 
+	var new_point = enemy_pathfinding.get_available_point_id()
+	enemy_pathfinding.add_point(new_point, Vector2(tile.x, tile.y))
+	var points_to_connect = []
+	
+	if tile.x > 0 && map[tile.x - 1][tile.y] in WALKABLE_TILES:
+		points_to_connect.append(enemy_pathfinding.get_closest_point(Vector2(tile.x - 1, tile.y)))
+	if tile.y > 0 && map[tile.x][tile.y - 1] in WALKABLE_TILES: 
+		points_to_connect.append(enemy_pathfinding.get_closest_point(Vector2(tile.x, tile.y - 1)))
+	if tile.x < level_size.x - 1 && map[tile.x + 1][tile.y] in WALKABLE_TILES: 
+		points_to_connect.append(enemy_pathfinding.get_closest_point(Vector2(tile.x + 1, tile.y)))
+	if tile.y < level.size.y - 1 && map[tile.x][tile.y + 1] in WALKABLE_TILES: 
+		points_to_connect.append(enemy_pathfinding.get_closest_point(Vector2(tile.x, tile.y + 1)))
+	
+	for point in points_to_connect: 
+		enemy_pathfinding.connect_points(point, new_point) 
+
 func update_visuals(): 
 	player.position = player_tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 	scoreElement.text = "Score: " + str(score)
+	
+	for enemy in enemies: 
+		if enemy.sprite_node and enemy.sprite_node.is_inside_tree():
+			enemy.sprite_node.position = enemy.tile * TILE_SIZE
+	
+	hpElement.text = "HP: " + str(player_hp)
 	
 func tile_to_id(x: int, y: int) -> int:
 	return x + y * int(level_size.x)
@@ -415,7 +465,7 @@ func pick_random_door_location(room):
 	var options = []
 
 	# Top and bottom walls
-	for x in range(room.position.x + 1, room.end.x - 2):
+	for x in range(room.position.x + 1, room.end.x - 1):
 		options.append(Vector2(x, room.position.y))  # Top
 		options.append(Vector2(x, room.end.y - 1))   # Bottom
 
@@ -507,6 +557,30 @@ func cut_regions(free_regions, region_to_remove):
 	
 	for add_region in addition_queue: 
 		free_regions.append(add_region)
+
+func damage_player(dmg): 
+	player_hp = max(0, player_hp - dmg)
+	if player_hp == 0: 
+		get_tree().change_scene_to_file("res://lose.tscn")
+
+func build_enemy_pathfinding_graph() -> AStar2D:
+	var graph = AStar2D.new()
+	for x in range(int(level_size.x)): 
+		for y in range(int(level_size.y)): 
+			if map[x][y] in [Tile.Floor, Tile.Open_Door, Tile.Path]:
+				var id = tile_to_id(x, y)
+				graph.add_point(id, Vector2(x, y))
+
+				if x > 0:
+					var left_id = tile_to_id(x - 1, y)
+					if graph.has_point(left_id): 
+						graph.connect_points(id, left_id)
+
+				if y > 0:
+					var up_id = tile_to_id(x, y - 1)
+					if graph.has_point(up_id):
+						graph.connect_points(id, up_id)
+	return graph
 		
 func set_tile(x, y, id):
 	x = int(x)
@@ -524,3 +598,7 @@ func set_tile(x, y, id):
 
 	tile_map.erase_cell(0, coords)
 	tile_map.set_cell(0, coords, id, Vector2i(0,0))
+	
+	# Only try to update pathfinding if it's already initialized
+	if id == Tile.Floor and enemy_pathfinding != null: 
+		clear_path(Vector2(x, y))
