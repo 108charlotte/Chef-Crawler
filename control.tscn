@@ -1,4 +1,4 @@
-[gd_scene load_steps=67 format=3 uid="uid://dei60x38a8c35"]
+[gd_scene load_steps=64 format=3 uid="uid://dei60x38a8c35"]
 
 [ext_resource type="Script" uid="uid://u1ovuac2wnt6" path="res://world.gd" id="1_k3vlv"]
 [ext_resource type="Texture2D" uid="uid://cqqmd5a771j3p" path="res://assets/tiles/tile016.png" id="2_g31lc"]
@@ -31,9 +31,7 @@
 [ext_resource type="Texture2D" uid="uid://cbcpyvcv3s15h" path="res://assets/tiles/tile817.png" id="22_7bdvj"]
 [ext_resource type="Texture2D" uid="uid://dfx5rnhu3nevq" path="res://assets/tiles/tile818.png" id="23_q6xdd"]
 [ext_resource type="Texture2D" uid="uid://dbm58gnf6sikj" path="res://assets/tiles/tile768.png" id="24_lqmkq"]
-[ext_resource type="PackedScene" uid="uid://mt4d44ttc7x8" path="res://enemy.tscn" id="33_jkes7"]
 [ext_resource type="Texture2D" uid="uid://cm0ii2u58gxjn" path="res://assets/tiles/tile004.png" id="36_bg87n"]
-[ext_resource type="Texture2D" uid="uid://coyiixc5qw7ke" path="res://assets/tiles/tile464.png" id="38_q6xdd"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_iy58a"]
 texture = ExtResource("2_g31lc")
@@ -187,22 +185,6 @@ sources/27 = SubResource("TileSetAtlasSource_2xhs3")
 sources/28 = SubResource("TileSetAtlasSource_olwrp")
 sources/29 = SubResource("TileSetAtlasSource_chp0b")
 
-[sub_resource type="GDScript" id="GDScript_0fbet"]
-script/source = "extends Control
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed:
-		print(\"Mouse clicked at: \", event.position)
-		
-
-func _on_game_title_meta_clicked(meta: Variant) -> void:
-	print(\"Game title clicked\")
-
-
-func _on_title_screen_2_gui_input(event: InputEvent) -> void:
-	print(\"Titlescreen node clicked\")
-"
-
 [node name="Game" type="Control"]
 layout_mode = 3
 anchors_preset = 0
@@ -250,16 +232,3 @@ offset_right = 215.0
 offset_bottom = 23.0
 theme_override_font_sizes/font_size = 8
 text = "Score: "
-
-[node name="InputManager" type="Control" parent="."]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = SubResource("GDScript_0fbet")
-
-[node name="Enemy" parent="." instance=ExtResource("33_jkes7")]
-
-[node name="DeadEnemy" type="Sprite2D" parent="."]
-texture = ExtResource("38_q6xdd")
-
-[connection signal="gui_input" from="." to="InputManager" method="_on_game_gui_input"]

@@ -16,7 +16,7 @@ const LEVEL_ENEMY_COUNTS = [5, 8, 12, 18, 26]
 const MIN_ROOM_DIMENSION = 5
 const MAX_ROOM_DIMENSION = 8
 
-const WALKABLE_TILES = [Tile.Stone_Wall, Tile.Path, Tile.Door, Tile.Floor, Tile.Open_Door]
+const WALKABLE_TILES = [Tile.Path, Tile.Door, Tile.Floor, Tile.Open_Door]
 
 enum Tile {
 	Floor, 
@@ -52,6 +52,7 @@ enum Tile {
 }
 
 var EnemyScene := preload("res://enemy.tscn")
+var DeadEnemyScene := preload("res://dead_enemy.tscn")
 
 class Enemy extends RefCounted: 
 	var sprite_node
@@ -69,8 +70,19 @@ class Enemy extends RefCounted:
 		sprite_node.position = tile * TILE_SIZE
 		game.add_child(sprite_node)
 	
-	func remove(): 
+	func remove(dead_enemy_scene, game): 
+		if not sprite_node or not sprite_node.is_inside_tree():
+			return
+
+		var dead_sprite = dead_enemy_scene.instantiate()
+		dead_sprite.position = sprite_node.position
+		sprite_node.get_parent().add_child(dead_sprite)
+
 		sprite_node.queue_free()
+
+		await game.get_tree().create_timer(1.0).timeout
+		if dead_sprite and dead_sprite.is_inside_tree():
+			dead_sprite.queue_free()
 	
 	func take_damage(game, dmg): 
 		if dead: 
@@ -93,6 +105,7 @@ var enemies = []
 @onready var camera = $Player/Camera2D
 @onready var level = get_node("../Stats/Level")
 @onready var scoreElement = get_node("../Stats/Score")
+@onready var game = get_node(".")
 
 var player_tile
 var score = 0
@@ -143,7 +156,7 @@ func try_move(dx, dy):
 			if enemy.tile.x == x && enemy.tile.y == y: 
 				enemy.take_damage(self, 1)
 				if enemy.dead: 
-					enemy.remove()
+					await enemy.remove(DeadEnemyScene, game)
 					enemies.erase(enemy)
 				blocked = true
 				break
@@ -162,14 +175,10 @@ func build_level():
 	tile_map.clear()
 	
 	for enemy in enemies: 
-		enemy.remove()
+		enemy.remove(DeadEnemyScene, game)
 	enemies.clear()
-	
-	var screen_size = get_viewport_rect().size
-	var tiles_x = ceil(screen_size.x / TILE_SIZE)
-	var tiles_y = ceil(screen_size.y / TILE_SIZE)
 
-	level_size = Vector2(tiles_x, tiles_y)
+	level_size = LEVEL_SIZES[level_num]
 	
 	print("Building map with size: ", level_size)
 
@@ -200,8 +209,8 @@ func build_level():
 	var num_enemies = LEVEL_ENEMY_COUNTS[level_num]
 	for i in range(num_enemies): 
 		var room = rooms[1 + randi() % (rooms.size() - 1)]
-		var x = room.position.x + 1 + randi() % int(room.size.x - 2)
-		var y = room.position.y + 1 + randi() % int(room.size.y - 2)
+		var x = int(room.position.x + 1 + randi() % int(room.size.x - 2))
+		var y = int(room.position.y + 1 + randi() % int(room.size.y - 2))
 	
 		var blocked = false
 		for enemy in enemies: 
@@ -209,7 +218,7 @@ func build_level():
 				blocked = true
 				break
 		
-		if !blocked: 
+		if !blocked && map[x][y] in WALKABLE_TILES: 
 			var enemy = Enemy.new(self, randi() % 2, x, y, EnemyScene)
 			enemies.append(enemy)
 	
@@ -255,16 +264,16 @@ func connect_rooms():
 	var stone_graph = AStar2D.new()
 	for x in range(int(level_size.x)): 
 		for y in range(int(level_size.y)): 
-			if map[x][y] in WALKABLE_TILES && map[x][y] != Tile.Stone_Wall: 
+			if map[x][y] in WALKABLE_TILES: 
 				var id = tile_to_id(x, y)
 				stone_graph.add_point(id, Vector2(x, y))
 				
-				if x > 0 && map[x-1][y] in WALKABLE_TILES && map[x][y] != Tile.Stone_Wall: 
+				if x > 0 && map[x-1][y] in WALKABLE_TILES: 
 					var left_id = tile_to_id(x - 1, y)
 					if stone_graph.has_point(left_id): 
 						stone_graph.connect_points(id, left_id)
 
-				if y > 0 && map[x][y-1] in WALKABLE_TILES && map[x][y] != Tile.Stone_Wall: 
+				if y > 0 && map[x][y-1] in WALKABLE_TILES: 
 					var up_id = tile_to_id(x, y - 1)
 					if stone_graph.has_point(up_id):
 						stone_graph.connect_points(id, up_id)
@@ -347,7 +356,7 @@ func build_stone_graph() -> AStar2D:
 	var graph = AStar2D.new()
 	for x in range(int(level_size.x)): 
 		for y in range(int(level_size.y)): 
-			if map[x][y] in WALKABLE_TILES: 
+			if map[x][y] in WALKABLE_TILES or map[x][y] == Tile.Stone_Wall: 
 				var id = tile_to_id(x, y)
 				graph.add_point(id, Vector2(x, y))
 
@@ -503,6 +512,10 @@ func set_tile(x, y, id):
 	y = int(y)
 	if x < 0 or x >= map.size() or typeof(map[x]) != TYPE_ARRAY or y < 0 or y >= map[x].size():
 		print("Invalid map coordinate: (", x, ",", y, ")")
+		return
+	
+	if id < 0 or id >= Tile.size():
+		push_error("🚨 Invalid Tile ID: %s" % id)
 		return
 
 	map[x][y] = id
