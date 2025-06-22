@@ -162,6 +162,7 @@ func try_move(dx, dy):
 	
 	if tile_type == Tile.Door: 
 		set_tile(x, y, Tile.Open_Door)
+		clear_path(Vector2(x, y))
 	elif tile_type == Tile.Crown: 
 		print("Victory! You found the crown!")
 		show_victory_screen()
@@ -272,7 +273,10 @@ func build_level():
 						if room.has_point(Vector2(x, y)):
 							reachable_room_set[room] = true
 
-	var reachable_rooms = reachable_room_set.keys()
+	var reachable_rooms = []
+	for room in reachable_room_set.keys():
+		if room != start_room:
+			reachable_rooms.append(room)
 
 	if reachable_rooms.size() > 0:
 		var end_room = reachable_rooms[randi() % reachable_rooms.size()]
