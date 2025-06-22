@@ -69,6 +69,7 @@ class Enemy extends RefCounted:
 		sprite_node.frame = enemy_level
 		sprite_node.position = tile * TILE_SIZE
 		game.add_child(sprite_node)
+		sprite_node.play("default")
 	
 	func remove(dead_enemy_scene, game): 
 		if not sprite_node or not sprite_node.is_inside_tree():
