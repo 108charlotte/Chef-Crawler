@@ -81,6 +81,7 @@ class Item extends RefCounted:
 	var tile
 	var type_id
 	var is_edible
+	var texture
 	
 	func _init(game, x, y, type_id): 
 		self.type_id = type_id
@@ -94,6 +95,7 @@ class Item extends RefCounted:
 				is_edible = false
 		sprite_node.position = tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 		game.add_child(sprite_node)
+		texture = sprite_node.sprite_frames.get_frame_texture(sprite_node.animation, 0)
 	
 	func remove(): 
 		sprite_node.queue_free()
@@ -101,6 +103,7 @@ class Item extends RefCounted:
 
 var EnemyScene := preload("res://enemy.tscn")
 var DeadEnemyScene := preload("res://dead_enemy.tscn")
+var InventoryItemDisplay := preload("res://inventory_item_display.tscn")
 
 class Enemy extends RefCounted: 
 	var sprite_node
@@ -179,6 +182,7 @@ var inventory = []
 @onready var hpElement = get_node("../Stats/HP")
 @onready var Inventory = get_node("../Inventory")
 @onready var Cooking_Menu = get_node("../Cooking_Menu")
+@onready var ItemGrid = Inventory.get_node("GridContainer")
 
 var player_tile
 var score = 0
@@ -360,9 +364,18 @@ func build_level():
 							reachable_room_set[room] = true
 
 	var reachable_rooms = []
-	for room in reachable_room_set.keys():
-		if room != start_room:
-			reachable_rooms.append(room)
+	for room in rooms:
+		if room == start_room:
+			continue
+
+		var center = room.position + room.size / 2
+		var tile = center.floor()
+		var tile_id = tile_to_id(tile.x, tile.y)
+		
+		if graph.has_point(tile_id):
+			var path = graph.get_point_path(start_id, tile_id)
+			if path.size() > 0:
+				reachable_rooms.append(room)
 
 	if reachable_rooms.size() > 0:
 		var end_room = reachable_rooms[randi() % reachable_rooms.size()]
@@ -504,7 +517,7 @@ func build_stone_graph() -> AStar2D:
 	var graph = AStar2D.new()
 	for x in range(int(level_size.x)): 
 		for y in range(int(level_size.y)): 
-			if map[x][y] in WALKABLE_TILES or map[x][y] == Tile.Stone_Wall: 
+			if map[x][y] in WALKABLE_TILES: 
 				var id = tile_to_id(x, y)
 				graph.add_point(id, Vector2(x, y))
 
@@ -702,7 +715,6 @@ func set_tile(x, y, id):
 	if id == Tile.Floor and enemy_pathfinding != null: 
 		clear_path(Vector2(x, y))
 
-
 func _on_cooking_menu_pressed() -> void:
 	print("cooking menu opening...")
 	Cooking_Menu.popup_centered()
@@ -714,3 +726,32 @@ func _on_inventory_pressed() -> void:
 
 func inventory_popup(): 
 	print("inventory popup opened")
+	for child in ItemGrid.get_children():
+		child.queue_free()
+
+	var item_counts = {}
+
+	# Count how many of each item type you have
+	for item in inventory:
+		print("Item texture type: ", typeof(item.texture))
+		print("Item texture: ", item.texture)
+		var key = item.type_id
+		if item_counts.has(key):
+			item_counts[key].count += 1
+		else:
+			item_counts[key] = {
+				"texture": item.texture,
+				"count": 1
+			}
+
+	# Add inventory items to UI
+	for item_data in item_counts.values():
+		var item_display = InventoryItemDisplay.instantiate()
+		ItemGrid.add_child(item_display)
+		item_display.set_item(item_data.texture, item_data.count)
+	
+func has_item_of_type(target_type_id) -> bool:
+	for item in inventory:
+		if item.type_id == target_type_id:
+			return true
+	return false
