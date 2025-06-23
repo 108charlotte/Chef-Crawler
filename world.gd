@@ -53,7 +53,7 @@ enum Tile {
 	Scroll, 
 }
 
-enum items {
+enum item_ids {
 	apple, 
 	bat, 
 	bee, 
@@ -86,13 +86,13 @@ class Item extends RefCounted:
 		self.type_id = type_id
 		tile = Vector2(x, y)
 		sprite_node = ItemScene.instantiate()
-		sprite_node.animation = items.keys()[randi() % items.size()]
+		sprite_node.animation = item_ids.keys()[randi() % item_ids.size()]
 		match sprite_node.animation: 
 			"apple", "carrot", "cheese", "pear": 
 				is_edible = true
 			_: 
 				is_edible = false
-		sprite_node.position = tile * TILE_SIZE
+		sprite_node.position = tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 		game.add_child(sprite_node)
 	
 	func remove(): 
@@ -115,7 +115,7 @@ class Enemy extends RefCounted:
 		tile = Vector2(x, y)
 		sprite_node = enemy_scene.instantiate()
 		sprite_node.frame = enemy_level
-		sprite_node.position = tile * TILE_SIZE
+		sprite_node.position = tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 		game.add_child(sprite_node)
 		sprite_node.play("default")
 	
@@ -167,6 +167,7 @@ var map = []
 var rooms = []
 var level_size
 var enemies = []
+var items = []
 var inventory = []
 
 @onready var tile_map = $TileMap
@@ -234,11 +235,24 @@ func try_move(dx, dy):
 				break
 		if !blocked: 
 			player_tile = Vector2(x, y)
+			pickup_items()
 	
 	for enemy in enemies: 
 		enemy.act(self)
 		
 	update_visuals()
+
+func pickup_items(): 
+	var remove_queue = []
+	for item in items: 
+		if item.tile == player_tile: 
+			print("Player picked up " + item.sprite_node.animation)
+			inventory.append(item)
+			score += 5
+			remove_queue.append(item)
+	for item in remove_queue: 
+		item.remove()
+		items.erase(item)
 
 func show_victory_screen(): 
 	set_process_input(false)
@@ -311,10 +325,17 @@ func build_level():
 
 	var num_items = LEVEL_ITEM_COUNTS[level_num]
 	for i in range(num_items): 
-		var room = rooms[randi() % (rooms.size())]
-		var x = int(room.position.x + 1 + randi() % int(room.size.x - 2))
-		var y = int(room.position.y + 1 + randi() % int(room.size.y - 2))
-		inventory.append(Item.new(self, x, y, items.keys()[randi() % items.size()]))
+		var item_placed = false
+		var attempts = 0
+		while not item_placed and attempts < 10:
+			var room = rooms[randi() % rooms.size()]
+			var x = int(room.position.x + 1 + randi() % int(room.size.x - 2))
+			var y = int(room.position.y + 1 + randi() % int(room.size.y - 2))
+			
+			if map[x][y] in WALKABLE_TILES:
+				items.append(Item.new(self, x, y, item_ids.keys()[randi() % item_ids.size()]))
+				item_placed = true
+		attempts += 1
 
 	var reachable_room_set = {}
 
@@ -374,10 +395,10 @@ func update_visuals():
 	
 	for enemy in enemies: 
 		if enemy.sprite_node and enemy.sprite_node.is_inside_tree():
-			enemy.sprite_node.position = enemy.tile * TILE_SIZE
+			enemy.sprite_node.position = enemy.tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 	
-	for item in inventory: 
-		item.sprite_node.position = item.tile * TILE_SIZE
+	for item in items: 
+		item.sprite_node.position = item.tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 	
 	hpElement.text = "HP: " + str(player_hp)
 	
