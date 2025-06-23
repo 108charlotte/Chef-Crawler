@@ -1,0 +1,171 @@
+[gd_scene load_steps=20 format=3 uid="uid://dlbcjtej1rv3d"]
+
+[ext_resource type="Texture2D" uid="uid://cg6hfhp1g7fdw" path="res://assets/tiles/tile915.png" id="1_og51k"]
+[ext_resource type="Texture2D" uid="uid://08k6mkvdhv56" path="res://assets/tiles/tile418.png" id="2_lnpbf"]
+[ext_resource type="Texture2D" uid="uid://wljtsng0co3x" path="res://assets/tiles/tile271.png" id="3_0ghbf"]
+[ext_resource type="Texture2D" uid="uid://5rts8s4fv0sv" path="res://assets/tiles/tile620.png" id="4_yoo3b"]
+[ext_resource type="Texture2D" uid="uid://bnfbplgv2yycu" path="res://assets/tiles/tile1014.png" id="5_sfhfg"]
+[ext_resource type="Texture2D" uid="uid://dfx5rnhu3nevq" path="res://assets/tiles/tile818.png" id="6_1xpli"]
+[ext_resource type="Texture2D" uid="uid://cnbd0v07wlxmw" path="res://assets/tiles/tile369.png" id="7_rh1cu"]
+[ext_resource type="Texture2D" uid="uid://bkwghwm1gk71q" path="res://assets/tiles/tile420.png" id="8_lnsal"]
+[ext_resource type="Texture2D" uid="uid://75kasieegau1" path="res://assets/tiles/tile867.png" id="9_qm78l"]
+[ext_resource type="Texture2D" uid="uid://cm2yp6q6u2u0g" path="res://assets/tiles/tile866.png" id="10_c61y0"]
+[ext_resource type="Texture2D" uid="uid://he4vsoqu8wrx" path="res://assets/tiles/tile605.png" id="11_jv8pv"]
+[ext_resource type="Texture2D" uid="uid://cbcpyvcv3s15h" path="res://assets/tiles/tile817.png" id="12_qssfy"]
+[ext_resource type="Texture2D" uid="uid://jybfg2sw0fkv" path="res://assets/tiles/tile965.png" id="13_bf6te"]
+[ext_resource type="Texture2D" uid="uid://cdp34hrtyy76n" path="res://assets/tiles/tile916.png" id="14_jsapn"]
+[ext_resource type="Texture2D" uid="uid://b142b3fiv0kw1" path="res://assets/tiles/tile099.png" id="15_7nwtw"]
+[ext_resource type="Texture2D" uid="uid://dek2iwds0sdw6" path="res://assets/tiles/tile423.png" id="16_2fqig"]
+[ext_resource type="Texture2D" uid="uid://bsapri1yfl4ok" path="res://assets/tiles/tile269.png" id="17_4ruum"]
+[ext_resource type="Texture2D" uid="uid://ba341w82evn06" path="res://assets/tiles/tile273.png" id="18_4kitp"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_3dain"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_og51k")
+}],
+"loop": true,
+"name": &"apple",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_lnpbf")
+}],
+"loop": true,
+"name": &"bat",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_0ghbf")
+}],
+"loop": true,
+"name": &"bee",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_yoo3b")
+}],
+"loop": true,
+"name": &"bone",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_sfhfg")
+}],
+"loop": true,
+"name": &"carrot",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_1xpli")
+}],
+"loop": true,
+"name": &"cheese",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_rh1cu")
+}],
+"loop": true,
+"name": &"chicken",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_lnsal")
+}],
+"loop": true,
+"name": &"eel",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_qm78l")
+}],
+"loop": true,
+"name": &"egg",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_c61y0")
+}],
+"loop": true,
+"name": &"fish",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_jv8pv")
+}],
+"loop": true,
+"name": &"goo",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("12_qssfy")
+}],
+"loop": true,
+"name": &"meat_chop",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("13_bf6te")
+}],
+"loop": true,
+"name": &"meat_slab",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_jsapn")
+}],
+"loop": true,
+"name": &"pear",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("15_7nwtw")
+}],
+"loop": true,
+"name": &"plant",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("16_2fqig")
+}],
+"loop": true,
+"name": &"rat",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_4ruum")
+}],
+"loop": true,
+"name": &"scorpion",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("18_4kitp")
+}],
+"loop": true,
+"name": &"spider",
+"speed": 5.0
+}]
+
+[node name="Item" type="AnimatedSprite2D"]
+sprite_frames = SubResource("SpriteFrames_3dain")
+animation = &"meat_chop"

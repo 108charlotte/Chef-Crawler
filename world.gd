@@ -12,6 +12,7 @@ const LEVEL_SIZES = [
 
 const LEVEL_ROOM_COUNTS = [5, 7, 9, 12, 15]
 const LEVEL_ENEMY_COUNTS = [5, 8, 12, 18, 26]
+const LEVEL_ITEM_COUNTS = [2, 4, 6, 8, 10]
 
 const MIN_ROOM_DIMENSION = 5
 const MAX_ROOM_DIMENSION = 8
@@ -51,6 +52,52 @@ enum Tile {
 	Cheese, 
 	Scroll, 
 }
+
+enum items {
+	apple, 
+	bat, 
+	bee, 
+	bone, 
+	carrot, 
+	cheese, 
+	chicken, 
+	eel, 
+	egg, 
+	fish, 
+	goo, 
+	meat_chop, 
+	meat_slab, 
+	pear, 
+	plant, 
+	rat, 
+	scorpion, 
+	spider, 
+}
+
+const ItemScene := preload("res://item.tscn")
+
+class Item extends RefCounted: 
+	var sprite_node
+	var tile
+	var type_id
+	var is_edible
+	
+	func _init(game, x, y, type_id): 
+		self.type_id = type_id
+		tile = Vector2(x, y)
+		sprite_node = ItemScene.instantiate()
+		sprite_node.animation = items.keys()[randi() % items.size()]
+		match sprite_node.animation: 
+			"apple", "carrot", "cheese", "pear": 
+				is_edible = true
+			_: 
+				is_edible = false
+		sprite_node.position = tile * TILE_SIZE
+		game.add_child(sprite_node)
+	
+	func remove(): 
+		sprite_node.queue_free()
+			
 
 var EnemyScene := preload("res://enemy.tscn")
 var DeadEnemyScene := preload("res://dead_enemy.tscn")
@@ -120,6 +167,7 @@ var map = []
 var rooms = []
 var level_size
 var enemies = []
+var inventory = []
 
 @onready var tile_map = $TileMap
 @onready var player = $Player
@@ -261,6 +309,13 @@ func build_level():
 				else: 
 					enemies.append(enemy)
 
+	var num_items = LEVEL_ITEM_COUNTS[level_num]
+	for i in range(num_items): 
+		var room = rooms[randi() % (rooms.size())]
+		var x = int(room.position.x + 1 + randi() % int(room.size.x - 2))
+		var y = int(room.position.y + 1 + randi() % int(room.size.y - 2))
+		inventory.append(Item.new(self, x, y, items.keys()[randi() % items.size()]))
+
 	var reachable_room_set = {}
 
 	for x in range(int(level_size.x)):
@@ -320,6 +375,9 @@ func update_visuals():
 	for enemy in enemies: 
 		if enemy.sprite_node and enemy.sprite_node.is_inside_tree():
 			enemy.sprite_node.position = enemy.tile * TILE_SIZE
+	
+	for item in inventory: 
+		item.sprite_node.position = item.tile * TILE_SIZE
 	
 	hpElement.text = "HP: " + str(player_hp)
 	
