@@ -1,4 +1,4 @@
-[gd_scene load_steps=64 format=3 uid="uid://dei60x38a8c35"]
+[gd_scene load_steps=66 format=3 uid="uid://dei60x38a8c35"]
 
 [ext_resource type="Script" uid="uid://u1ovuac2wnt6" path="res://world.gd" id="1_k3vlv"]
 [ext_resource type="Texture2D" uid="uid://cqqmd5a771j3p" path="res://assets/tiles/tile016.png" id="2_g31lc"]
@@ -31,6 +31,8 @@
 [ext_resource type="Texture2D" uid="uid://cbcpyvcv3s15h" path="res://assets/tiles/tile817.png" id="22_7bdvj"]
 [ext_resource type="Texture2D" uid="uid://dfx5rnhu3nevq" path="res://assets/tiles/tile818.png" id="23_q6xdd"]
 [ext_resource type="Texture2D" uid="uid://dbm58gnf6sikj" path="res://assets/tiles/tile768.png" id="24_lqmkq"]
+[ext_resource type="Texture2D" uid="uid://c8jmtj38nu44f" path="res://assets/tiles/tile290.png" id="33_jkes7"]
+[ext_resource type="Texture2D" uid="uid://ci6kfc5dakgj8" path="res://assets/tiles/tile241.png" id="34_gqja0"]
 [ext_resource type="Texture2D" uid="uid://cm0ii2u58gxjn" path="res://assets/tiles/tile004.png" id="36_bg87n"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_iy58a"]
@@ -232,3 +234,21 @@ offset_right = 215.0
 offset_bottom = 23.0
 theme_override_font_sizes/font_size = 8
 text = "Score: "
+
+[node name="Buttons" type="CanvasLayer" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Buttons"]
+offset_left = 561.0
+offset_right = 641.0
+offset_bottom = 40.0
+color = Color(0.180005, 0.180005, 0.180005, 0.847059)
+
+[node name="Cooking_Menu" type="Sprite2D" parent="Buttons"]
+position = Vector2(583, 19)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("33_jkes7")
+
+[node name="Inventory" type="Sprite2D" parent="Buttons"]
+position = Vector2(620, 19)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("34_gqja0")
