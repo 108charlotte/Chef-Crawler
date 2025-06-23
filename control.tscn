@@ -238,17 +238,30 @@ text = "Score: "
 [node name="Buttons" type="CanvasLayer" parent="."]
 
 [node name="ColorRect" type="ColorRect" parent="Buttons"]
-offset_left = 561.0
-offset_right = 641.0
-offset_bottom = 40.0
+offset_left = 590.0
+offset_right = 640.0
+offset_bottom = 25.0
 color = Color(0.180005, 0.180005, 0.180005, 0.847059)
 
-[node name="Cooking_Menu" type="Sprite2D" parent="Buttons"]
-position = Vector2(583, 19)
+[node name="Cooking_Menu_Button" type="TextureButton" parent="Buttons"]
+offset_left = 591.0
+offset_right = 631.0
+offset_bottom = 40.0
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("33_jkes7")
+texture_normal = ExtResource("33_jkes7")
 
-[node name="Inventory" type="Sprite2D" parent="Buttons"]
-position = Vector2(620, 19)
+[node name="Inventory_Button" type="TextureButton" parent="Buttons"]
+offset_left = 616.0
+offset_right = 656.0
+offset_bottom = 40.0
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("34_gqja0")
+texture_normal = ExtResource("34_gqja0")
+
+[node name="Inventory" type="PopupPanel" parent="."]
+size = Vector2i(400, 200)
+
+[node name="Cooking_Menu" type="PopupPanel" parent="."]
+auto_translate_mode = 1
+
+[connection signal="pressed" from="Buttons/Cooking_Menu_Button" to="World" method="_on_cooking_menu_pressed"]
+[connection signal="pressed" from="Buttons/Inventory_Button" to="World" method="_on_inventory_pressed"]

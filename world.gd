@@ -177,6 +177,8 @@ var inventory = []
 @onready var scoreElement = get_node("../Stats/Score")
 @onready var game = get_node(".")
 @onready var hpElement = get_node("../Stats/HP")
+@onready var Inventory = get_node("../Inventory")
+@onready var Cooking_Menu = get_node("../Cooking_Menu")
 
 var player_tile
 var score = 0
@@ -217,9 +219,9 @@ func try_move(dx, dy):
 		show_victory_screen()
 	elif tile_type == Tile.Ladder:
 		player_tile = Vector2(x, y)
-		level_num += 1
-		score += 20
-		if level_num < LEVEL_SIZES.size():
+		if level_num < LEVEL_SIZES.size() - 1:
+			level_num += 1
+			score += 20
 			build_level()
 		else:
 			score += 1000
@@ -322,6 +324,8 @@ func build_level():
 					enemy = null
 				else: 
 					enemies.append(enemy)
+	
+	cleanup_items()
 
 	var num_items = LEVEL_ITEM_COUNTS[level_num]
 	for i in range(num_items): 
@@ -331,6 +335,12 @@ func build_level():
 			var room = rooms[randi() % rooms.size()]
 			var x = int(room.position.x + 1 + randi() % int(room.size.x - 2))
 			var y = int(room.position.y + 1 + randi() % int(room.size.y - 2))
+			
+			var enemy_on_tile = false
+			for enemy in enemies:
+				if enemy.tile == Vector2(x, y):
+					enemy_on_tile = true
+					break
 			
 			if map[x][y] in WALKABLE_TILES:
 				items.append(Item.new(self, x, y, item_ids.keys()[randi() % item_ids.size()]))
@@ -365,6 +375,12 @@ func build_level():
 		print("🚨 No reachable rooms for ladder placement")
 
 	level.text = "Level: " + str(level_num + 1)
+
+func cleanup_items():
+	for item in items:
+		if item.sprite_node and item.sprite_node.is_inside_tree():
+			item.sprite_node.queue_free()
+	items.clear()
 
 func cleanup_enemies():
 	for enemy in enemies:
@@ -471,13 +487,6 @@ func add_random_connection(stone_graph, room_graph):
 	var path = stone_graph.get_point_path(closest_start_point, closest_end_point)
 	
 	if path.is_empty():
-		print("🚨 No path between points:")
-		print("start_pos:", start_position, "→ point ID:", closest_start_point)
-		print("end_pos:", end_position, "→ point ID:", closest_end_point)
-		print("Tiles at start:", map[start_position.x][start_position.y])
-		print("Tiles at end:", map[end_position.x][end_position.y])
-		print("Is start in graph?", stone_graph.has_point(closest_start_point))
-		print("Is end in graph?", stone_graph.has_point(closest_end_point))
 		return
 
 	assert(path)
@@ -486,9 +495,7 @@ func add_random_connection(stone_graph, room_graph):
 	set_tile(end_position.x, end_position.y, Tile.Door)
 	
 	for path_point in path: 
-		if map[path_point.x][path_point.y] == Tile.Door:
-			print("✅ Path includes door at", path_point)
-		else: 
+		if map[path_point.x][path_point.y] != Tile.Door:
 			set_tile(path_point.x, path_point.y, Tile.Path)
 	
 	room_graph.connect_points(start_room_id, end_room_id)
@@ -685,7 +692,7 @@ func set_tile(x, y, id):
 		push_error("🚨 Invalid Tile ID: %s" % id)
 		return
 
-	map[x][y] = id
+	map[int(x)][int(y)] = id
 	var coords = Vector2i(x, y)
 
 	tile_map.erase_cell(0, coords)
@@ -694,3 +701,16 @@ func set_tile(x, y, id):
 	# Only try to update pathfinding if it's already initialized
 	if id == Tile.Floor and enemy_pathfinding != null: 
 		clear_path(Vector2(x, y))
+
+
+func _on_cooking_menu_pressed() -> void:
+	print("cooking menu opening...")
+	Cooking_Menu.popup_centered()
+
+func _on_inventory_pressed() -> void:
+	print("inventory menu opening...")
+	Inventory.popup_centered()
+	inventory_popup()
+
+func inventory_popup(): 
+	print("inventory popup opened")
