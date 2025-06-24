@@ -1,21 +1,51 @@
-[gd_scene load_steps=2 format=3 uid="uid://gimt8t1uh1jo"]
+[gd_scene load_steps=3 format=3 uid="uid://gimt8t1uh1jo"]
 
 [ext_resource type="Script" uid="uid://deb2cyx5ccepa" path="res://inventory_item_display.gd" id="1_eev5u"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eev5u"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.717647, 0, 1)
 
 [node name="InventoryItemDisplay" type="Control"]
 custom_minimum_size = Vector2(36, 36)
 layout_mode = 3
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 38.0
+offset_bottom = 38.0
+mouse_filter = 2
 script = ExtResource("1_eev5u")
 
-[node name="Icon" type="TextureRect" parent="."]
+[node name="HighlightBorder" type="Panel" parent="."]
+visible = false
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 32.0
+offset_bottom = 32.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_eev5u")
 
 [node name="CountLabel" type="Label" parent="."]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
+
+[node name="Icon" type="TextureButton" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(2, 2)
+
+[node name="PopupPanel" type="PopupPanel" parent="."]
+size = Vector2i(200, 100)
+
+[node name="Label" type="Label" parent="PopupPanel"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 196.0
+offset_bottom = 96.0
+autowrap_mode = 3
+
+[connection signal="pressed" from="Icon" to="." method="_on_icon_pressed"]

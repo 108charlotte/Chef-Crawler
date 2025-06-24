@@ -1,4 +1,4 @@
-[gd_scene load_steps=66 format=3 uid="uid://dei60x38a8c35"]
+[gd_scene load_steps=38 format=3 uid="uid://dei60x38a8c35"]
 
 [ext_resource type="Script" uid="uid://u1ovuac2wnt6" path="res://world.gd" id="1_k3vlv"]
 [ext_resource type="Texture2D" uid="uid://cqqmd5a771j3p" path="res://assets/tiles/tile016.png" id="2_g31lc"]
@@ -11,26 +11,12 @@
 [ext_resource type="Texture2D" uid="uid://b08p5lfym573j" path="res://assets/tiles/tile070.png" id="7_xvdhi"]
 [ext_resource type="Texture2D" uid="uid://cijuhgfjkrbty" path="res://assets/tiles/tile142.png" id="8_oq4si"]
 [ext_resource type="Texture2D" uid="uid://b2hwqbttdhgu1" path="res://assets/tiles/tile118.png" id="8_sky72"]
-[ext_resource type="Texture2D" uid="uid://b7yk2jes0v40v" path="res://assets/tiles/tile577.png" id="9_pi4e7"]
-[ext_resource type="Texture2D" uid="uid://he4vsoqu8wrx" path="res://assets/tiles/tile605.png" id="10_kuuv8"]
-[ext_resource type="Texture2D" uid="uid://5rts8s4fv0sv" path="res://assets/tiles/tile620.png" id="11_kuuv8"]
-[ext_resource type="Texture2D" uid="uid://bnyyr1d0t1870" path="res://assets/tiles/tile691.png" id="12_ou021"]
 [ext_resource type="Texture2D" uid="uid://bh8oij0vi41in" path="res://assets/tiles/tile018.png" id="12_tam4a"]
-[ext_resource type="Texture2D" uid="uid://pgh11ca60el7" path="res://assets/tiles/tile737.png" id="13_3fl80"]
 [ext_resource type="Texture2D" uid="uid://c65hs7isr20w5" path="res://assets/tiles/tile019.png" id="13_3kp4k"]
 [ext_resource type="Texture2D" uid="uid://bugxw8us7ssg2" path="res://assets/tiles/tile637.png" id="13_g31lc"]
 [ext_resource type="Texture2D" uid="uid://b1afxdqqn7vy4" path="res://assets/tiles/tile077.png" id="14_g31lc"]
-[ext_resource type="Texture2D" uid="uid://75kasieegau1" path="res://assets/tiles/tile867.png" id="15_87wg0"]
 [ext_resource type="Texture2D" uid="uid://cvubw676oudje" path="res://assets/tiles/tile020.png" id="15_gg2cy"]
-[ext_resource type="Texture2D" uid="uid://cm2yp6q6u2u0g" path="res://assets/tiles/tile866.png" id="16_3ag6a"]
-[ext_resource type="Texture2D" uid="uid://cg6hfhp1g7fdw" path="res://assets/tiles/tile915.png" id="17_b3rfh"]
-[ext_resource type="Texture2D" uid="uid://cdp34hrtyy76n" path="res://assets/tiles/tile916.png" id="18_5axgr"]
-[ext_resource type="Texture2D" uid="uid://jybfg2sw0fkv" path="res://assets/tiles/tile965.png" id="19_wfgqd"]
-[ext_resource type="Texture2D" uid="uid://bv10dbhn8gi55" path="res://assets/tiles/tile1013.png" id="20_jkes7"]
-[ext_resource type="Texture2D" uid="uid://bnfbplgv2yycu" path="res://assets/tiles/tile1014.png" id="21_gqja0"]
-[ext_resource type="Texture2D" uid="uid://cbcpyvcv3s15h" path="res://assets/tiles/tile817.png" id="22_7bdvj"]
-[ext_resource type="Texture2D" uid="uid://dfx5rnhu3nevq" path="res://assets/tiles/tile818.png" id="23_q6xdd"]
-[ext_resource type="Texture2D" uid="uid://dbm58gnf6sikj" path="res://assets/tiles/tile768.png" id="24_lqmkq"]
+[ext_resource type="FontFile" uid="uid://dad85w27ntjmm" path="res://assets/PressStart2P-Regular.ttf" id="20_kuuv8"]
 [ext_resource type="Texture2D" uid="uid://c8jmtj38nu44f" path="res://assets/tiles/tile290.png" id="33_jkes7"]
 [ext_resource type="Texture2D" uid="uid://ci6kfc5dakgj8" path="res://assets/tiles/tile241.png" id="34_gqja0"]
 [ext_resource type="Texture2D" uid="uid://cm0ii2u58gxjn" path="res://assets/tiles/tile004.png" id="36_bg87n"]
@@ -63,68 +49,8 @@ texture = ExtResource("7_xvdhi")
 texture = ExtResource("8_oq4si")
 0:0/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3fl80"]
-texture = ExtResource("9_pi4e7")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8jbwv"]
-texture = ExtResource("10_kuuv8")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_v61lp"]
-texture = ExtResource("11_kuuv8")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_dgp6r"]
-texture = ExtResource("12_ou021")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_858bn"]
-texture = ExtResource("13_3fl80")
-0:0/0 = 0
-
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sky72"]
 texture = ExtResource("4_kbped")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_n8v1s"]
-texture = ExtResource("15_87wg0")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7bdvj"]
-texture = ExtResource("16_3ag6a")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_q6xdd"]
-texture = ExtResource("17_b3rfh")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lqmkq"]
-texture = ExtResource("18_5axgr")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_il8ev"]
-texture = ExtResource("19_wfgqd")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_l62jy"]
-texture = ExtResource("20_jkes7")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8v3ii"]
-texture = ExtResource("21_gqja0")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2xhs3"]
-texture = ExtResource("22_7bdvj")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_olwrp"]
-texture = ExtResource("23_q6xdd")
-0:0/0 = 0
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_chp0b"]
-texture = ExtResource("24_lqmkq")
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0ytqx"]
@@ -171,21 +97,13 @@ sources/11 = SubResource("TileSetAtlasSource_oq4si")
 sources/12 = SubResource("TileSetAtlasSource_pi4e7")
 sources/13 = SubResource("TileSetAtlasSource_kuuv8")
 sources/14 = SubResource("TileSetAtlasSource_ou021")
-sources/15 = SubResource("TileSetAtlasSource_3fl80")
-sources/16 = SubResource("TileSetAtlasSource_8jbwv")
-sources/17 = SubResource("TileSetAtlasSource_v61lp")
-sources/18 = SubResource("TileSetAtlasSource_dgp6r")
-sources/19 = SubResource("TileSetAtlasSource_858bn")
-sources/20 = SubResource("TileSetAtlasSource_n8v1s")
-sources/21 = SubResource("TileSetAtlasSource_7bdvj")
-sources/22 = SubResource("TileSetAtlasSource_q6xdd")
-sources/23 = SubResource("TileSetAtlasSource_lqmkq")
-sources/24 = SubResource("TileSetAtlasSource_il8ev")
-sources/25 = SubResource("TileSetAtlasSource_l62jy")
-sources/26 = SubResource("TileSetAtlasSource_8v3ii")
-sources/27 = SubResource("TileSetAtlasSource_2xhs3")
-sources/28 = SubResource("TileSetAtlasSource_olwrp")
-sources/29 = SubResource("TileSetAtlasSource_chp0b")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ou021"]
+bg_color = Color(0.295867, 0.295867, 0.295866, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="Game" type="Control"]
 layout_mode = 3
@@ -260,15 +178,50 @@ texture_normal = ExtResource("34_gqja0")
 [node name="Inventory" type="PopupPanel" parent="."]
 size = Vector2i(400, 200)
 
-[node name="GridContainer" type="GridContainer" parent="Inventory"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Inventory"]
 offset_left = 4.0
 offset_top = 4.0
 offset_right = 396.0
 offset_bottom = 196.0
+
+[node name="Label" type="Label" parent="Inventory/VBoxContainer"]
+layout_mode = 2
+text = "Inventory"
+
+[node name="GridContainer" type="GridContainer" parent="Inventory/VBoxContainer"]
+layout_mode = 2
 columns = 11
 
 [node name="Cooking_Menu" type="PopupPanel" parent="."]
 auto_translate_mode = 1
+size = Vector2i(400, 200)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Cooking_Menu"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 396.0
+offset_bottom = 196.0
+
+[node name="Label" type="Label" parent="Cooking_Menu/VBoxContainer"]
+layout_mode = 2
+text = "Ingredients"
+
+[node name="GridContainer" type="GridContainer" parent="Cooking_Menu/VBoxContainer"]
+layout_mode = 2
+columns = 11
+
+[node name="Button" type="Button" parent="Cooking_Menu/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("20_kuuv8")
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_ou021")
+text = "Combine"
+
+[node name="Label2" type="Label" parent="Cooking_Menu/VBoxContainer"]
+visible = false
+layout_mode = 2
+text = "No ingredients selected"
 
 [connection signal="pressed" from="Buttons/Cooking_Menu_Button" to="World" method="_on_cooking_menu_pressed"]
 [connection signal="pressed" from="Buttons/Inventory_Button" to="World" method="_on_inventory_pressed"]
+[connection signal="pressed" from="Cooking_Menu/VBoxContainer/Button" to="World" method="combine"]

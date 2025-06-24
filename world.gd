@@ -16,7 +16,7 @@ const LEVEL_ITEM_COUNTS = [2, 4, 6, 8, 10]
 
 const MIN_ROOM_DIMENSION = 5
 const MAX_ROOM_DIMENSION = 8
-const PLAYER_START_HP = 5
+const PLAYER_START_HP = 10
 
 const WALKABLE_TILES = [Tile.Path, Tile.Door, Tile.Floor, Tile.Open_Door]
 
@@ -36,21 +36,6 @@ enum Tile {
 	Open_Door, 
 	Ladder, 
 	Crown, 
-	Skull, 
-	Goo, 
-	Bone, 
-	Cauldron, 
-	Cobweb, 
-	Egg, 
-	Fish, 
-	Apple, 
-	Pear, 
-	Meat, 
-	Stick, 
-	Carrot, 
-	Ham, 
-	Cheese, 
-	Scroll, 
 }
 
 enum item_ids {
@@ -182,7 +167,9 @@ var inventory = []
 @onready var hpElement = get_node("../Stats/HP")
 @onready var Inventory = get_node("../Inventory")
 @onready var Cooking_Menu = get_node("../Cooking_Menu")
-@onready var ItemGrid = Inventory.get_node("GridContainer")
+@onready var ItemGrid = Inventory.get_node("VBoxContainer/GridContainer")
+@onready var IngredientGrid = Cooking_Menu.get_node("VBoxContainer/GridContainer")
+@onready var CookWarningLabel = Cooking_Menu.get_node("VBoxContainer/Label2")
 
 var player_tile
 var score = 0
@@ -346,9 +333,10 @@ func build_level():
 					enemy_on_tile = true
 					break
 			
-			if map[x][y] in WALKABLE_TILES:
-				items.append(Item.new(self, x, y, item_ids.keys()[randi() % item_ids.size()]))
-				item_placed = true
+			if x >= 0 and x < map.size() and y >= 0 and y < map[x].size():
+				if map[x][y] in WALKABLE_TILES:
+					items.append(Item.new(self, x, y, item_ids.keys()[randi() % item_ids.size()]))
+					item_placed = true
 		attempts += 1
 
 	var reachable_room_set = {}
@@ -430,6 +418,9 @@ func update_visuals():
 		item.sprite_node.position = item.tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 	
 	hpElement.text = "HP: " + str(player_hp)
+	
+	if player_hp <= 0: 
+		get_tree().change_scene_to_file("res://lose.tscn")
 	
 func tile_to_id(x: int, y: int) -> int:
 	return x + y * int(level_size.x)
@@ -517,7 +508,7 @@ func build_stone_graph() -> AStar2D:
 	var graph = AStar2D.new()
 	for x in range(int(level_size.x)): 
 		for y in range(int(level_size.y)): 
-			if map[x][y] in WALKABLE_TILES: 
+			if map[x][y] in WALKABLE_TILES or map[x][y] == Tile.Stone_Wall: 
 				var id = tile_to_id(x, y)
 				graph.add_point(id, Vector2(x, y))
 
@@ -718,6 +709,7 @@ func set_tile(x, y, id):
 func _on_cooking_menu_pressed() -> void:
 	print("cooking menu opening...")
 	Cooking_Menu.popup_centered()
+	cooking_menu_popup()
 
 func _on_inventory_pressed() -> void:
 	print("inventory menu opening...")
@@ -741,17 +733,141 @@ func inventory_popup():
 		else:
 			item_counts[key] = {
 				"texture": item.texture,
-				"count": 1
+				"count": 1, 
+				"edible": item.is_edible, 
+				"type_id": item.type_id
 			}
 
 	# Add inventory items to UI
 	for item_data in item_counts.values():
 		var item_display = InventoryItemDisplay.instantiate()
 		ItemGrid.add_child(item_display)
-		item_display.set_item(item_data.texture, item_data.count)
+		item_display.set_item(item_data.texture, item_data.count, item_data.edible, self, item_data.type_id)
 	
 func has_item_of_type(target_type_id) -> bool:
 	for item in inventory:
 		if item.type_id == target_type_id:
 			return true
 	return false
+
+func item_clicked(item_display): 
+	print("Item clicked:", item_display)
+	if Inventory.is_visible():
+		print("Inventory popup is open")
+		if (item_display.is_edible): 
+			use_item(item_display)
+		else: 
+			item_display.show_popup_message("This item is not edible! Go to the cooking menu to make something with it. ")
+	elif Cooking_Menu.is_visible():
+		print("Cooking menu is open")
+		select_item(item_display)
+
+func select_item(item_display): 
+	item_display.highlight(!item_display.is_highlighted)
+
+func combine(): 
+	print("User clicked combine")
+	var selected_items = []
+	var num_items = 0
+	for child in IngredientGrid.get_children():
+		if "is_highlighted" in child and child.is_highlighted:
+			print("Highlighted item:", child)
+			selected_items.append(child)
+			num_items += 1
+	if len(selected_items) <= 1 && num_items <= 1: 
+		CookWarningLabel.text = "Please select at least two items to combine"
+		CookWarningLabel.visible = true
+	else: 
+		CookWarningLabel.visible = false
+		var effect = calculate_health_effect(num_items)
+		
+		for selected in selected_items:
+			var removed = false
+			for i in inventory.size():
+				if inventory[i].type_id == selected.type_id:
+					inventory.remove_at(i)
+					removed = true
+					break
+		
+		player_hp += effect
+		update_visuals()
+		
+		if effect > 0:
+			CookWarningLabel.text = "You gained %d HP!" % effect
+		elif effect < 0:
+			CookWarningLabel.text = "You lost %d HP!" % abs(effect)
+		
+		CookWarningLabel.visible = true
+		await get_tree().create_timer(1.0).timeout
+		
+		# Refresh inventory popup to reflect item used
+		CookWarningLabel.visible = false
+		cooking_menu_popup()
+
+func calculate_health_effect(num_items: int) -> int:
+	var base = num_items * 2  # Base effect grows linearly with item count
+	var variance = randi_range(-num_items, num_items)  # Randomness scaled by num_items
+	
+	var chance = randf()  # Random float between 0 and 1
+
+	if chance < 0.2:
+		# Bad food: effect reduces health, scaled with num_items
+		return -randi_range(1, max(1, base / 2))
+	elif chance > 0.8:
+		# Great food: bonus effect larger with more items
+		return base + randi_range(num_items, num_items * 3)
+	else:
+		# Normal effect: base plus small variance, clamped so it doesn't get too small or too big
+		return clamp(base + variance, 1, base + num_items * 2)
+
+func use_item(item_display):
+	# Find and remove the first matching item in inventory
+	for i in inventory.size():
+		var inv_item = inventory[i]
+		if inv_item.texture == item_display.icon.texture_normal and inv_item.is_edible:
+			inventory.remove_at(i)
+			break
+
+	# Apply effect
+	player_hp += calculate_health_effect(1)
+	update_visuals()
+	
+	item_display.show_popup_message("You just gained 5 hp!")
+	await get_tree().create_timer(1.0).timeout
+	
+	# Refresh inventory popup to reflect item used
+	inventory_popup()
+
+func cooking_menu_popup(): 
+	print("cooking menu opened")
+	
+	CookWarningLabel.visible = false
+	
+	# display non-edible ingredients
+	for child in IngredientGrid.get_children():
+		child.queue_free()
+
+	var item_counts = {}
+	
+	for item in inventory:
+		print("Item:", item.type_id, "Edible:", item.is_edible)
+		if item.is_edible:
+			continue
+
+		var key = item.type_id
+		if item_counts.has(key):
+			item_counts[key].count += 1
+		else:
+			item_counts[key] = {
+				"texture": item.texture,
+				"count": 1,
+				"edible": false, 
+				"type_id": item.type_id
+			}
+
+
+	# Add inventory items to UI
+	for item_data in item_counts.values():
+		var item_display = InventoryItemDisplay.instantiate()
+		IngredientGrid.add_child(item_display)
+		item_display.set_item(item_data.texture, item_data.count, item_data.edible, self, item_data.type_id)
