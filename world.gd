@@ -16,7 +16,7 @@ const LEVEL_ITEM_COUNTS = [2, 4, 6, 8, 10]
 
 const MIN_ROOM_DIMENSION = 5
 const MAX_ROOM_DIMENSION = 8
-const PLAYER_START_HP = 10
+const PLAYER_START_HP = 7
 
 const WALKABLE_TILES = [Tile.Path, Tile.Door, Tile.Floor, Tile.Open_Door]
 
@@ -249,6 +249,7 @@ func pickup_items():
 
 func show_victory_screen(): 
 	set_process_input(false)
+	Global.score = score
 	get_tree().change_scene_to_file("res://victory.tscn")
 
 func build_level(): 
@@ -418,9 +419,6 @@ func update_visuals():
 		item.sprite_node.position = item.tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 	
 	hpElement.text = "HP: " + str(player_hp)
-	
-	if player_hp <= 0: 
-		get_tree().change_scene_to_file("res://lose.tscn")
 	
 func tile_to_id(x: int, y: int) -> int:
 	return x + y * int(level_size.x)
@@ -664,6 +662,7 @@ func damage_player(dmg):
 	print("Damage player: hp now ", player_hp)
 	if player_hp == 0: 
 		print("Player died, changing to lose scene")
+		Global.score = score
 		get_tree().change_scene_to_file("res://lose.tscn")
 
 func build_enemy_pathfinding_graph() -> AStar2D:
@@ -773,7 +772,7 @@ func combine():
 		if "is_highlighted" in child and child.is_highlighted:
 			print("Highlighted item:", child)
 			selected_items.append(child)
-			num_items += 1
+			num_items += child.item_count
 	if len(selected_items) <= 1 && num_items <= 1: 
 		CookWarningLabel.text = "Please select at least two items to combine"
 		CookWarningLabel.visible = true
@@ -790,6 +789,11 @@ func combine():
 					break
 		
 		player_hp += effect
+		if player_hp <= 0: 
+			Global.score = score
+			get_tree().change_scene_to_file("res://lose.tscn")
+			return
+		
 		update_visuals()
 		
 		if effect > 0:
@@ -829,10 +833,14 @@ func use_item(item_display):
 			break
 
 	# Apply effect
-	player_hp += calculate_health_effect(1)
+	var effect = calculate_health_effect(1)
+	player_hp += effect
 	update_visuals()
 	
-	item_display.show_popup_message("You just gained 5 hp!")
+	if effect > 0:
+		item_display.show_popup_message("You just gained %d hp!" % effect)
+	elif effect < 0:
+		item_display.show_popup_message("You lost %d hp!" % abs(effect))
 	await get_tree().create_timer(1.0).timeout
 	
 	# Refresh inventory popup to reflect item used

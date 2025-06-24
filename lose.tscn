@@ -56,13 +56,20 @@ horizontal_alignment = 1
 
 [node name="Button" type="Button" parent="."]
 layout_mode = 0
-offset_left = 273.0
+offset_left = 261.0
 offset_top = 221.0
-offset_right = 363.0
+offset_right = 381.0
 offset_bottom = 252.0
 theme_override_fonts/font = ExtResource("2_46blr")
 theme_override_font_sizes/font_size = 9
 theme_override_styles/normal = SubResource("StyleBoxFlat_v31sk")
 text = "Play Again"
+
+[node name="ScoreLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 290.0
+offset_top = 150.0
+offset_right = 330.0
+offset_bottom = 173.0
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

@@ -123,56 +123,59 @@ format = 2
 texture = ExtResource("14_g31lc")
 
 [node name="Camera2D" type="Camera2D" parent="World/Player"]
+zoom = Vector2(3, 3)
 position_smoothing_enabled = true
 
 [node name="Stats" type="CanvasLayer" parent="."]
 
 [node name="ColorRect" type="ColorRect" parent="Stats"]
-offset_right = 259.0
-offset_bottom = 13.0
+offset_right = 300.0
+offset_bottom = 30.0
 color = Color(0.180005, 0.180005, 0.180005, 0.847059)
 
 [node name="Level" type="Label" parent="Stats"]
 offset_left = 7.0
 offset_right = 47.0
 offset_bottom = 23.0
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 16
 text = "Level: "
 
 [node name="HP" type="Label" parent="Stats"]
 offset_left = 91.0
 offset_right = 131.0
 offset_bottom = 23.0
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 16
 text = "HP: "
 
 [node name="Score" type="Label" parent="Stats"]
 offset_left = 175.0
 offset_right = 215.0
 offset_bottom = 23.0
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 16
 text = "Score: "
 
 [node name="Buttons" type="CanvasLayer" parent="."]
 
 [node name="ColorRect" type="ColorRect" parent="Buttons"]
-offset_left = 590.0
+offset_left = 540.0
 offset_right = 640.0
-offset_bottom = 25.0
+offset_bottom = 50.0
 color = Color(0.180005, 0.180005, 0.180005, 0.847059)
 
 [node name="Cooking_Menu_Button" type="TextureButton" parent="Buttons"]
-offset_left = 591.0
-offset_right = 631.0
-offset_bottom = 40.0
-scale = Vector2(1.5, 1.5)
+offset_left = 551.0
+offset_top = 9.0
+offset_right = 567.0
+offset_bottom = 25.0
+scale = Vector2(2, 2)
 texture_normal = ExtResource("33_jkes7")
 
 [node name="Inventory_Button" type="TextureButton" parent="Buttons"]
-offset_left = 616.0
-offset_right = 656.0
-offset_bottom = 40.0
-scale = Vector2(1.5, 1.5)
+offset_left = 594.0
+offset_top = 8.0
+offset_right = 610.0
+offset_bottom = 24.0
+scale = Vector2(2, 2)
 texture_normal = ExtResource("34_gqja0")
 
 [node name="Inventory" type="PopupPanel" parent="."]
