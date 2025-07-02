@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://dei60x38a8c35"]
+[gd_scene load_steps=40 format=3 uid="uid://dei60x38a8c35"]
 
 [ext_resource type="Script" uid="uid://u1ovuac2wnt6" path="res://world.gd" id="1_k3vlv"]
 [ext_resource type="Texture2D" uid="uid://cqqmd5a771j3p" path="res://assets/tiles/tile016.png" id="2_g31lc"]
@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://b1afxdqqn7vy4" path="res://assets/tiles/tile077.png" id="14_g31lc"]
 [ext_resource type="Texture2D" uid="uid://cvubw676oudje" path="res://assets/tiles/tile020.png" id="15_gg2cy"]
 [ext_resource type="FontFile" uid="uid://dad85w27ntjmm" path="res://assets/PressStart2P-Regular.ttf" id="20_kuuv8"]
+[ext_resource type="Shader" uid="uid://dvqpm2gy7v5yr" path="res://circle.gdshader" id="21_ou021"]
 [ext_resource type="Texture2D" uid="uid://c8jmtj38nu44f" path="res://assets/tiles/tile290.png" id="33_jkes7"]
 [ext_resource type="Texture2D" uid="uid://ci6kfc5dakgj8" path="res://assets/tiles/tile241.png" id="34_gqja0"]
 [ext_resource type="Texture2D" uid="uid://cm0ii2u58gxjn" path="res://assets/tiles/tile004.png" id="36_bg87n"]
@@ -98,6 +99,14 @@ sources/12 = SubResource("TileSetAtlasSource_pi4e7")
 sources/13 = SubResource("TileSetAtlasSource_kuuv8")
 sources/14 = SubResource("TileSetAtlasSource_ou021")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3fl80"]
+shader = ExtResource("21_ou021")
+shader_parameter/circle_size = 0.07
+shader_parameter/feather = 0.05
+shader_parameter/circle_position = Vector2(0.5, 0.5)
+shader_parameter/screen_width = 1920.0
+shader_parameter/screen_height = 1080.0
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ou021"]
 bg_color = Color(0.295867, 0.295867, 0.295866, 1)
 corner_radius_top_left = 4
@@ -125,6 +134,22 @@ texture = ExtResource("14_g31lc")
 [node name="Camera2D" type="Camera2D" parent="World/Player"]
 zoom = Vector2(3, 3)
 position_smoothing_enabled = true
+
+[node name="Overlay" type="ColorRect" parent="World"]
+z_index = 1
+material = SubResource("ShaderMaterial_3fl80")
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -190.0
+offset_right = 350.0
+offset_bottom = 190.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.729412)
 
 [node name="Stats" type="CanvasLayer" parent="."]
 

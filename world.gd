@@ -170,6 +170,7 @@ var inventory = []
 @onready var ItemGrid = Inventory.get_node("VBoxContainer/GridContainer")
 @onready var IngredientGrid = Cooking_Menu.get_node("VBoxContainer/GridContainer")
 @onready var CookWarningLabel = Cooking_Menu.get_node("VBoxContainer/Label2")
+@onready var overlay = $Overlay
 
 var player_tile
 var score = 0
@@ -179,6 +180,11 @@ var player_hp = PLAYER_START_HP
 func _ready(): 
 	level_num = 0
 	score = 0
+	
+	overlay.anchor_left = 0.5
+	overlay.anchor_right = 0.5
+	overlay.anchor_top = 0.5
+	overlay.anchor_bottom = 0.5
 	
 	randomize()
 	build_level()
@@ -419,6 +425,8 @@ func update_visuals():
 		item.sprite_node.position = item.tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 	
 	hpElement.text = "HP: " + str(player_hp)
+	var overlay_pos = (player_tile * TILE_SIZE + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)) - overlay.size / 2
+	overlay.position = overlay_pos
 	
 func tile_to_id(x: int, y: int) -> int:
 	return x + y * int(level_size.x)
